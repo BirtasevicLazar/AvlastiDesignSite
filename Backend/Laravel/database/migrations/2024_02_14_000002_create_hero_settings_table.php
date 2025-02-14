@@ -10,9 +10,7 @@ return new class extends Migration
     {
         Schema::create('hero_settings', function (Blueprint $table) {
             $table->id();
-            $table->string('bestseller_image')->nullable();
-            $table->string('bestseller_title');
-            $table->decimal('bestseller_price', 10, 2);
+            $table->foreignId('featured_product_id')->nullable()->constrained('products')->nullOnDelete();
             $table->timestamps();
         });
     }

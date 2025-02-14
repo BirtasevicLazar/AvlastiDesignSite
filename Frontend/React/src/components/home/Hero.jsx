@@ -13,19 +13,51 @@ const fadeInUp = {
 
 export default function Hero() {
   const [heroSettings, setHeroSettings] = useState(null);
+  const [featuredProduct, setFeaturedProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchHeroSettings = async () => {
       try {
         const response = await axiosInstance.get('/api/hero-settings');
         setHeroSettings(response.data);
+        if (response.data.featured_product) {
+          setFeaturedProduct(response.data.featured_product);
+        }
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching hero settings:', error);
+        setLoading(false);
       }
     };
 
     fetchHeroSettings();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="relative bg-gray-50">
+        <div className="mx-auto max-w-7xl">
+          <div className="relative z-10 pt-14 lg:w-full lg:max-w-2xl">
+            <div className="relative px-6 py-32 sm:py-40 lg:px-8 lg:py-56 lg:pr-0">
+              <div className="animate-pulse">
+                <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
+                <div className="h-6 bg-gray-200 rounded w-1/4 mb-8"></div>
+                <div className="h-12 bg-gray-200 rounded w-48"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
+          <div className="h-full w-full bg-gray-200"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!featuredProduct) {
+    return null;
+  }
 
   return (
     <div className="relative h-screen w-full overflow-hidden">
@@ -75,9 +107,7 @@ export default function Hero() {
               >
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white">
                   <span className="block mb-2">Unikatne majice</span>
-                  <span className="block text-transparent bg-clip-text bg-gradient-to-r from-teal-300 via-emerald-400 to-teal-500">
-                    za tvoj stil života
-                  </span>
+                  <span className="block text-teal-400">za tvoj stil života</span>
                 </h1>
               </motion.div>
 
@@ -152,8 +182,8 @@ export default function Hero() {
           <div className="flex flex-col gap-3">
             <div className="aspect-square bg-gray-100 rounded-xl overflow-hidden">
               <img 
-                src={heroSettings?.bestseller_image || bestselerMajica}
-                alt="Bestseler majica"
+                src={`${import.meta.env.VITE_API_URL}/storage/${featuredProduct.image}`}
+                alt={featuredProduct.name}
                 className="h-full w-full object-cover"
               />
             </div>
@@ -161,7 +191,7 @@ export default function Hero() {
               <h3 className="text-base font-semibold text-white">Bestseler majica</h3>
               <p className="text-sm text-white/70">Dostupno u više boja</p>
               <div className="mt-2 flex items-center justify-between">
-                <span className="text-base font-medium text-white">2.499 RSD</span>
+                <span className="text-base font-medium text-white">€{featuredProduct.price}</span>
                 <button className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors">
                   <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />

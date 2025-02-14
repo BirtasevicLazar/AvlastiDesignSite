@@ -5,16 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class HeroSettings extends Model
+class PopularProduct extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'featured_product_id'
+        'product_id',
+        'display_order'
     ];
 
-    public function featuredProduct()
+    public function product()
     {
-        return $this->belongsTo(Product::class, 'featured_product_id');
+        return $this->belongsTo(Product::class);
     }
 } 
