@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 // Podešavanje axios-a
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL = 'http://192.168.0.21:8000';
+axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
 const AdminRegister = () => {
     const [formData, setFormData] = useState({
