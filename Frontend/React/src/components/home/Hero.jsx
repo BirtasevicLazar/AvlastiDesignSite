@@ -1,7 +1,9 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import bestselerMajica from '../../assets/images/Majica.jpg'
 import heroImage from '../../assets/images/hero.png'
+import axiosInstance from '../../utils/axios'
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -10,6 +12,21 @@ const fadeInUp = {
 }
 
 export default function Hero() {
+  const [heroSettings, setHeroSettings] = useState(null);
+
+  useEffect(() => {
+    const fetchHeroSettings = async () => {
+      try {
+        const response = await axiosInstance.get('/api/hero-settings');
+        setHeroSettings(response.data);
+      } catch (error) {
+        console.error('Error fetching hero settings:', error);
+      }
+    };
+
+    fetchHeroSettings();
+  }, []);
+
   return (
     <div className="relative h-screen w-full overflow-hidden">
       {/* Pozadinska slika sa overlay-em */}
@@ -135,7 +152,7 @@ export default function Hero() {
           <div className="flex flex-col gap-3">
             <div className="aspect-square bg-gray-100 rounded-xl overflow-hidden">
               <img 
-                src={bestselerMajica}
+                src={heroSettings?.bestseller_image || bestselerMajica}
                 alt="Bestseler majica"
                 className="h-full w-full object-cover"
               />
