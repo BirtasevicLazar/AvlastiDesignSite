@@ -41,9 +41,11 @@ const ProductDetails = () => {
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [selectedSize, setSelectedSize] = useState(null);
+    const [selectedSize, setSelectedSize] = useState('L');
     const [selectedColor, setSelectedColor] = useState(null);
     const [quantity, setQuantity] = useState(1);
+
+    const sizes = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'];
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -118,27 +120,17 @@ const ProductDetails = () => {
     }
 
     return (
-        <div className="min-h-screen pt-20 bg-gray-50">
+        <div className="min-h-screen pt-20 bg-white">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {/* Nazad dugme */}
-                <div className="max-w-6xl mx-auto mb-8 text-center sm:text-left">
-                    <Link
-                        to="/products"
-                        className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors duration-200"
-                    >
-                        <ChevronLeftIcon className="h-5 w-5 mr-1" />
-                        Nazad na proizvode
-                    </Link>
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+                {/* Glavni sadržaj - Slika i detalji */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
                     {/* Slika proizvoda */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="max-w-xl mx-auto lg:mx-0 w-full"
+                        className="w-full"
                     >
-                        <div className="aspect-square bg-white rounded-3xl overflow-hidden shadow-sm">
+                        <div className="aspect-square bg-white rounded-3xl overflow-hidden border border-gray-100">
                             <img
                                 src={`${import.meta.env.VITE_API_URL}/storage/${product.image}`}
                                 alt={product.name}
@@ -152,50 +144,47 @@ const ProductDetails = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
-                        className="max-w-xl mx-auto lg:mx-0 w-full"
+                        className="bg-white rounded-3xl p-6 border border-gray-100 flex flex-col justify-between h-full"
                     >
                         <div className="space-y-6">
-                            <div className="text-center lg:text-left">
-                                <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                            <div className="space-y-4">
+                                <h1 className="text-3xl font-bold text-gray-900 text-center lg:text-left">
                                     {product.name}
                                 </h1>
-                                <p className="text-2xl font-medium text-gray-900">
+                                <p className="text-2xl font-medium text-gray-900 text-center lg:text-left">
                                     €{product.price}
+                                </p>
+                                <p className="text-gray-600 leading-relaxed text-center lg:text-left">
+                                    {product.description}
                                 </p>
                             </div>
 
-                            <p className="text-gray-600 leading-relaxed text-center lg:text-left">
-                                {product.description}
-                            </p>
-
                             {/* Veličine */}
-                            {product.sizes && product.sizes.length > 0 && (
-                                <div className="text-center lg:text-left">
-                                    <h3 className="text-sm font-medium text-gray-900 mb-3">
-                                        Veličina
-                                    </h3>
-                                    <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
-                                        {product.sizes.map((size) => (
-                                            <button
-                                                key={size}
-                                                onClick={() => setSelectedSize(size)}
-                                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                                                    selectedSize === size
-                                                        ? 'bg-gray-900 text-white'
-                                                        : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-                                                }`}
-                                            >
-                                                {size}
-                                            </button>
-                                        ))}
-                                    </div>
+                            <div>
+                                <h3 className="text-sm font-medium text-gray-900 mb-3 text-center lg:text-left">
+                                    Veličina
+                                </h3>
+                                <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
+                                    {sizes.map((size) => (
+                                        <button
+                                            key={size}
+                                            onClick={() => setSelectedSize(size)}
+                                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                                selectedSize === size
+                                                    ? 'bg-gray-900 text-white'
+                                                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                                            }`}
+                                        >
+                                            {size}
+                                        </button>
+                                    ))}
                                 </div>
-                            )}
+                            </div>
 
                             {/* Boje */}
                             {product.colors && product.colors.length > 0 && (
-                                <div className="text-center lg:text-left">
-                                    <h3 className="text-sm font-medium text-gray-900 mb-3">
+                                <div>
+                                    <h3 className="text-sm font-medium text-gray-900 mb-3 text-center lg:text-left">
                                         Boja
                                     </h3>
                                     <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
@@ -219,8 +208,8 @@ const ProductDetails = () => {
                             )}
 
                             {/* Količina */}
-                            <div className="text-center lg:text-left">
-                                <h3 className="text-sm font-medium text-gray-900 mb-3">
+                            <div>
+                                <h3 className="text-sm font-medium text-gray-900 mb-3 text-center lg:text-left">
                                     Količina
                                 </h3>
                                 <div className="flex items-center justify-center lg:justify-start space-x-4">
@@ -241,44 +230,99 @@ const ProductDetails = () => {
                                     </button>
                                 </div>
                             </div>
+                        </div>
 
+                        <div className="space-y-6 mt-6">
                             {/* Dugme za dodavanje u korpu */}
                             <button className="w-full h-14 bg-gray-900 text-white rounded-2xl hover:bg-gray-800 transition-colors duration-200 flex items-center justify-center space-x-2 text-sm font-medium">
                                 <ShoppingBagIcon className="h-5 w-5" />
                                 <span>Dodaj u korpu</span>
                             </button>
 
-                            {/* Dodatne informacije */}
-                            <div className="pt-6 border-t border-gray-100 space-y-4 text-center lg:text-left">
-                                <div>
-                                    <h3 className="text-sm font-medium text-gray-900 mb-2">
-                                        Pol
-                                    </h3>
-                                    <p className="text-gray-600">
-                                        {product.gender === 'male' ? 'Muško' :
-                                         product.gender === 'female' ? 'Žensko' : 'Unisex'}
-                                    </p>
+                            {/* Dodatne informacije o dostavi */}
+                            <div className="grid grid-cols-2 gap-4 pt-6 border-t border-gray-100">
+                                <div className="text-center">
+                                    <h4 className="text-sm font-medium text-gray-900 mb-1">Besplatna dostava</h4>
+                                    <p className="text-xs text-gray-600">za porudžbine preko €50</p>
                                 </div>
-                                {product.material && (
-                                    <div>
-                                        <h3 className="text-sm font-medium text-gray-900 mb-2">
-                                            Materijal
-                                        </h3>
-                                        <p className="text-gray-600">{product.material}</p>
-                                    </div>
-                                )}
-                                {product.care && (
-                                    <div>
-                                        <h3 className="text-sm font-medium text-gray-900 mb-2">
-                                            Održavanje
-                                        </h3>
-                                        <p className="text-gray-600">{product.care}</p>
-                                    </div>
-                                )}
+                                <div className="text-center">
+                                    <h4 className="text-sm font-medium text-gray-900 mb-1">Sigurna kupovina</h4>
+                                    <p className="text-xs text-gray-600">100% sigurno plaćanje</p>
+                                </div>
                             </div>
                         </div>
                     </motion.div>
                 </div>
+
+                {/* Informacije o proizvodu - Puna širina */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="bg-white rounded-3xl p-8 border border-gray-100"
+                >
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        {/* Informacije o proizvodu */}
+                        <div>
+                            <h3 className="text-lg font-semibold text-gray-900 mb-6">Informacije o proizvodu</h3>
+                            <div className="grid grid-cols-2 gap-6">
+                                <div className="space-y-4">
+                                    <div>
+                                        <h4 className="text-sm font-medium text-gray-900">Materijal</h4>
+                                        <p className="text-gray-600">100% Pamuk</p>
+                                    </div>
+                                    <div>
+                                        <h4 className="text-sm font-medium text-gray-900">Održavanje</h4>
+                                        <p className="text-gray-600">Pranje na 30°C</p>
+                                    </div>
+                                    <div>
+                                        <h4 className="text-sm font-medium text-gray-900">Zemlja porekla</h4>
+                                        <p className="text-gray-600">Srbija</p>
+                                    </div>
+                                </div>
+                                <div className="space-y-4">
+                                    <div>
+                                        <h4 className="text-sm font-medium text-gray-900">Štampa</h4>
+                                        <p className="text-gray-600">Digitalna štampa visokog kvaliteta</p>
+                                    </div>
+                                    <div>
+                                        <h4 className="text-sm font-medium text-gray-900">Dostava</h4>
+                                        <p className="text-gray-600">2-4 radna dana</p>
+                                    </div>
+                                    <div>
+                                        <h4 className="text-sm font-medium text-gray-900">Garancija</h4>
+                                        <p className="text-gray-600">30 dana povrat novca</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Vodič za veličine */}
+                        <div>
+                            <h3 className="text-lg font-semibold text-gray-900 mb-6">Vodič za veličine</h3>
+                            <div className="overflow-x-auto">
+                                <table className="min-w-full divide-y divide-gray-200">
+                                    <thead>
+                                        <tr className="bg-gray-50">
+                                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Veličina</th>
+                                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Grudi (cm)</th>
+                                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Dužina (cm)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="bg-white divide-y divide-gray-200">
+                                        {sizes.map((size, index) => (
+                                            <tr key={size} className={index % 2 === 0 ? 'bg-gray-50' : ''}>
+                                                <td className="px-4 py-2 text-sm text-gray-900">{size}</td>
+                                                <td className="px-4 py-2 text-sm text-gray-600">{90 + index * 4}</td>
+                                                <td className="px-4 py-2 text-sm text-gray-600">{65 + index * 2}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </motion.div>
             </div>
         </div>
     );

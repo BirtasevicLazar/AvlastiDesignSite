@@ -236,25 +236,20 @@ const Products = () => {
                                                 />
                                             </div>
                                             <div className="p-6">
-                                                <h3 className="text-lg font-medium text-gray-900 mb-2 line-clamp-1">
+                                                <h3 className="text-lg font-medium text-gray-900 mb-1 line-clamp-1 text-center">
                                                     {product.name}
                                                 </h3>
-                                                <p className="text-gray-500 mb-4 line-clamp-2 text-sm">
+                                                <p className="text-gray-500 mb-3 line-clamp-2 text-sm text-center">
                                                     {product.description}
                                                 </p>
-                                                <div className="flex justify-between items-center">
+                                                <p className="text-sm text-gray-600 mb-2 text-center">
+                                                    {product.gender === 'male' ? 'Muška' :
+                                                     product.gender === 'female' ? 'Ženska' : 'Unisex'} majica
+                                                </p>
+                                                <div className="text-center">
                                                     <span className="text-lg font-medium text-gray-900">
                                                         €{product.price}
                                                     </span>
-                                                    <button 
-                                                        onClick={(e) => {
-                                                            e.preventDefault();
-                                                            // Ovde će ići logika za dodavanje u korpu
-                                                        }}
-                                                        className="px-4 py-2 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors duration-200 text-sm font-medium"
-                                                    >
-                                                        Dodaj u korpu
-                                                    </button>
                                                 </div>
                                             </div>
                                         </Link>

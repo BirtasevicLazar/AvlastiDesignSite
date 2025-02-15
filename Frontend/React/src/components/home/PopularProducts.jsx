@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import axiosInstance from '../../utils/axios';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination, Navigation } from 'swiper/modules';
@@ -131,31 +132,37 @@ const PopularProducts = () => {
                     >
                         {popularProducts.map(({ product }) => (
                             <SwiperSlide key={product.id} className="py-4">
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ duration: 0.5 }}
-                                    className="group h-full bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300"
-                                >
-                                    <div className="aspect-square w-full p-6">
-                                        <div className="relative w-full h-full rounded-xl overflow-hidden bg-gray-50">
-                                            <img
-                                                src={`${import.meta.env.VITE_API_URL}/storage/${product.image}`}
-                                                alt={product.name}
-                                                className="h-full w-full object-cover object-center transform group-hover:scale-105 transition-transform duration-500"
-                                            />
+                                <Link to={`/products/${product.id}`}>
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 20 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        viewport={{ once: true }}
+                                        transition={{ duration: 0.5 }}
+                                        className="h-full bg-white rounded-2xl shadow-sm"
+                                    >
+                                        <div className="aspect-square w-full p-6">
+                                            <div className="relative w-full h-full rounded-xl overflow-hidden bg-gray-50">
+                                                <img
+                                                    src={`${import.meta.env.VITE_API_URL}/storage/${product.image}`}
+                                                    alt={product.name}
+                                                    className="h-full w-full object-cover object-center"
+                                                />
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="px-6 pb-8 text-center">
-                                        <h3 className="text-lg font-medium text-gray-900 mb-3 line-clamp-2 mx-auto">
-                                            {product.name}
-                                        </h3>
-                                        <p className="text-xl font-semibold text-teal-600">
-                                            €{product.price}
-                                        </p>
-                                    </div>
-                                </motion.div>
+                                        <div className="px-6 pb-8 text-center">
+                                            <h3 className="text-lg font-medium text-gray-900 mb-1 line-clamp-2 mx-auto">
+                                                {product.name}
+                                            </h3>
+                                            <p className="text-sm text-gray-600 mb-2 text-center">
+                                                {product.gender === 'male' ? 'Muška' :
+                                                 product.gender === 'female' ? 'Ženska' : 'Unisex'} majica
+                                            </p>
+                                            <p className="text-xl font-semibold text-teal-600">
+                                                €{product.price}
+                                            </p>
+                                        </div>
+                                    </motion.div>
+                                </Link>
                             </SwiperSlide>
                         ))}
                     </Swiper>
