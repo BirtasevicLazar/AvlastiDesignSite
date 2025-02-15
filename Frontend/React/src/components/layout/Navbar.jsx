@@ -15,6 +15,7 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const location = useLocation()
+  const isHomePage = location.pathname === '/'
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 0)
@@ -30,13 +31,15 @@ export default function Navbar() {
     document.body.style.overflow = isOpen ? 'hidden' : 'unset'
   }, [isOpen])
 
+  const shouldUseDarkColors = !isHomePage || isScrolled
+
   return (
     <>
       <motion.nav
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled ? 'bg-white/80 backdrop-blur-md shadow-sm' : 'bg-transparent'
+          shouldUseDarkColors ? 'bg-white/80 backdrop-blur-md shadow-sm' : 'bg-transparent'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -49,8 +52,8 @@ export default function Navbar() {
                 src={logo} 
                 alt="AvlastiDesign Logo" 
                 className={`h-6 w-auto transition-all duration-300 ease-in-out ${
-                  isScrolled 
-                    ? 'opacity-100 brightness-100' 
+                  shouldUseDarkColors
+                    ? 'opacity-100 brightness-0' 
                     : 'opacity-90 hover:opacity-100 brightness-0 invert'
                 }`}
               />
@@ -62,7 +65,7 @@ export default function Navbar() {
                   key={item.name}
                   to={item.href}
                   className={`text-sm tracking-wide transition-all duration-300 ${
-                    isScrolled 
+                    shouldUseDarkColors
                       ? location.pathname === item.href
                         ? 'text-gray-900'
                         : 'text-gray-500 hover:text-gray-900'
@@ -77,7 +80,7 @@ export default function Navbar() {
               <button
                 type="button"
                 className={`transition-colors duration-300 ${
-                  isScrolled
+                  shouldUseDarkColors
                     ? 'text-gray-500 hover:text-gray-900'
                     : 'text-white/80 hover:text-white'
                 }`}
@@ -89,26 +92,26 @@ export default function Navbar() {
             <button
               onClick={() => setIsOpen(!isOpen)}
               className={`md:hidden w-8 h-8 flex flex-col justify-center items-center transition-all duration-300 ease-in-out ${
-                isScrolled ? 'text-gray-900' : 'text-white'
+                shouldUseDarkColors ? 'text-gray-900' : 'text-white'
               }`}
             >
               <span 
                 className={`block h-0.5 w-5 rounded-full transition-all duration-300 ease-in-out ${
-                  isScrolled ? 'bg-gray-900' : 'bg-white'
+                  shouldUseDarkColors ? 'bg-gray-900' : 'bg-white'
                 } ${
                   isOpen ? 'rotate-45 translate-y-0.5' : '-translate-y-1'
                 }`}
               />
               <span 
                 className={`block h-0.5 w-5 rounded-full transition-all duration-300 ease-in-out ${
-                  isScrolled ? 'bg-gray-900' : 'bg-white'
+                  shouldUseDarkColors ? 'bg-gray-900' : 'bg-white'
                 } ${
                   isOpen ? 'opacity-0' : 'opacity-100'
                 }`}
               />
               <span 
                 className={`block h-0.5 w-5 rounded-full transition-all duration-300 ease-in-out ${
-                  isScrolled ? 'bg-gray-900' : 'bg-white'
+                  shouldUseDarkColors ? 'bg-gray-900' : 'bg-white'
                 } ${
                   isOpen ? '-rotate-45 -translate-y-0.5' : 'translate-y-1'
                 }`}
@@ -141,7 +144,7 @@ export default function Navbar() {
                 <img 
                   src={logo} 
                   alt="AvlastiDesign Logo" 
-                  className="h-5 w-auto brightness-100"
+                  className="h-5 w-auto brightness-0"
                 />
                 <button
                   onClick={() => setIsOpen(false)}

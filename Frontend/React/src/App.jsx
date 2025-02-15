@@ -6,6 +6,9 @@ import AdminLogin from './components/admin/Login'
 import AdminDashboard from './components/admin/Dashboard'
 import AdminRegister from './components/admin/Register'
 import ProtectedRoute from './components/auth/ProtectedRoute'
+import Products from './pages/Products'
+import ProductDetails from './pages/ProductDetails'
+import ScrollToTop from './components/utils/ScrollToTop'
 
 // Kompleksna skrivena ruta koju je teško pogoditi
 const ADMIN_SECRET_PATH = 'control-panel-secure-x9j2m5'
@@ -13,6 +16,7 @@ const ADMIN_SECRET_PATH = 'control-panel-secure-x9j2m5'
 function App() {
     return (
         <Router>
+            <ScrollToTop />
             <div className="min-h-screen flex flex-col">
                 {/* Navbar će biti sakriven na admin stranicama */}
                 <Routes>
@@ -23,6 +27,8 @@ function App() {
                 <main className="flex-grow">
                     <Routes>
                         <Route path="/" element={<Home />} />
+                        <Route path="/products" element={<Products />} />
+                        <Route path="/products/:id" element={<ProductDetails />} />
                         
                         {/* Admin rute */}
                         <Route path="/admin/login" element={<AdminLogin />} />
