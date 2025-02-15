@@ -1,12 +1,11 @@
 import { Link } from 'react-router-dom'
+import logo from '../../assets/images/logo.png'
 
 const navigation = {
   main: [
     { name: 'O nama', href: '/about' },
     { name: 'Proizvodi', href: '/products' },
     { name: 'Kontakt', href: '/contact' },
-    { name: 'Uslovi korišćenja', href: '/terms' },
-    { name: 'Politika privatnosti', href: '/privacy' },
   ],
   social: [
     {
@@ -40,28 +39,93 @@ const navigation = {
 
 export default function Footer() {
   return (
-    <footer className="bg-white">
-      <div className="mx-auto max-w-7xl overflow-hidden px-6 py-20 sm:py-24 lg:px-8">
-        <nav className="-mb-6 columns-2 sm:flex sm:justify-center sm:space-x-12" aria-label="Footer">
-          {navigation.main.map((item) => (
-            <div key={item.name} className="pb-6">
-              <Link to={item.href} className="text-sm leading-6 text-gray-600 hover:text-gray-900">
-                {item.name}
+    <footer className="bg-white border-t border-gray-100">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Gornji deo footer-a */}
+        <div className="py-12 lg:py-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
+            {/* Leva strana - Logo i opis */}
+            <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
+              <Link to="/" className="inline-block">
+                <img
+                  src={logo}
+                  alt="AvlastiDesign Logo"
+                  className="h-12 w-auto brightness-0"
+                />
+              </Link>
+              <p className="mt-6 text-base text-gray-600 max-w-sm">
+                Kreiramo jedinstvene dizajne koji inspirišu i ostavljaju trajan utisak u svetu mode.
+              </p>
+              <div className="mt-8 flex justify-center lg:justify-start space-x-6">
+                {navigation.social.map((item) => (
+                  <a
+                    key={item.name}
+                    href={item.href}
+                    className="text-gray-500 hover:text-gray-900 transition-colors duration-200"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span className="sr-only">{item.name}</span>
+                    <item.icon className="h-6 w-6" aria-hidden="true" />
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            {/* Desna strana - Navigacija i kontakt */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-12">
+              <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
+                <h3 className="text-sm font-semibold text-gray-900 tracking-wider uppercase mb-6">
+                  Kompanija
+                </h3>
+                <nav className="flex flex-col space-y-4">
+                  {navigation.main.map((item) => (
+                    <Link
+                      key={item.name}
+                      to={item.href}
+                      className="text-base text-gray-600 hover:text-gray-900 transition-colors duration-200"
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                </nav>
+              </div>
+              <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
+                <h3 className="text-sm font-semibold text-gray-900 tracking-wider uppercase mb-6">
+                  Kontakt
+                </h3>
+                <div className="flex flex-col space-y-4">
+                  <a
+                    href="mailto:contact@avlastidesign.com"
+                    className="text-base text-gray-600 hover:text-gray-900 transition-colors duration-200"
+                  >
+                    contact@avlastidesign.com
+                  </a>
+                  <p className="text-base text-gray-600">
+                    Beograd, Srbija
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Donji deo footer-a */}
+        <div className="border-t border-gray-100 py-8">
+          <div className="flex flex-col items-center space-y-4 md:space-y-0 md:flex-row md:justify-between">
+            <p className="text-sm text-gray-500 text-center">
+              &copy; {new Date().getFullYear()} AvlastiDesign. Sva prava zadržana.
+            </p>
+            <div className="flex flex-col space-y-4 sm:space-y-0 sm:flex-row sm:space-x-8 items-center">
+              <Link to="/terms" className="text-sm text-gray-500 hover:text-gray-900 transition-colors duration-200">
+                Uslovi korišćenja
+              </Link>
+              <Link to="/privacy" className="text-sm text-gray-500 hover:text-gray-900 transition-colors duration-200">
+                Politika privatnosti
               </Link>
             </div>
-          ))}
-        </nav>
-        <div className="mt-10 flex justify-center space-x-10">
-          {navigation.social.map((item) => (
-            <a key={item.name} href={item.href} className="text-gray-400 hover:text-gray-500">
-              <span className="sr-only">{item.name}</span>
-              <item.icon className="h-6 w-6" aria-hidden="true" />
-            </a>
-          ))}
+          </div>
         </div>
-        <p className="mt-10 text-center text-xs leading-5 text-gray-500">
-          &copy; {new Date().getFullYear()} AvlastiDesign. Sva prava zadržana.
-        </p>
       </div>
     </footer>
   )
