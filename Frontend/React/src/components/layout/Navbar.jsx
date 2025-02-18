@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { ShoppingBagIcon } from '@heroicons/react/24/outline'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useCart } from '../../context/CartContext'
 import logo from '../../assets/images/logo.png'
 
 const navigation = [
@@ -16,6 +17,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const location = useLocation()
   const isHomePage = location.pathname === '/'
+  const { cart } = useCart()
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 0)
@@ -77,16 +79,21 @@ export default function Navbar() {
                   {item.name}
                 </Link>
               ))}
-              <button
-                type="button"
-                className={`transition-colors duration-300 ${
+              <Link
+                to="/cart"
+                className={`relative transition-colors duration-300 ${
                   shouldUseDarkColors
                     ? 'text-gray-500 hover:text-gray-900'
                     : 'text-white/80 hover:text-white'
                 }`}
               >
                 <ShoppingBagIcon className="h-5 w-5" />
-              </button>
+                {cart.length > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-medium px-1.5 py-0.5 rounded-full">
+                    {cart.length}
+                  </span>
+                )}
+              </Link>
             </div>
 
             <button
@@ -185,13 +192,18 @@ export default function Navbar() {
                   transition={{ duration: 0.2, delay: 0.1 }}
                   className="mt-8"
                 >
-                  <button
-                    type="button"
+                  <Link
+                    to="/cart"
                     className="w-full flex items-center justify-center space-x-2 bg-gray-900 text-white px-4 py-2.5 rounded-lg hover:bg-gray-800 transition-colors"
                   >
                     <ShoppingBagIcon className="h-5 w-5" />
                     <span className="text-sm">Korpa</span>
-                  </button>
+                    {cart.length > 0 && (
+                      <span className="bg-white text-gray-900 text-xs font-medium px-1.5 py-0.5 rounded-full">
+                        {cart.length}
+                      </span>
+                    )}
+                  </Link>
                 </motion.div>
 
                 <motion.div

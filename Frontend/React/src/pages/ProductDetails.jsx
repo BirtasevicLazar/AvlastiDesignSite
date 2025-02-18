@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ChevronLeftIcon, ShoppingBagIcon } from '@heroicons/react/24/outline';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronLeftIcon, ShoppingBagIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline';
+import { useCart } from '../context/CartContext';
 import axiosInstance from '../utils/axios';
 
 // Mapiranje naziva boja u HEX vrednosti
@@ -36,16 +37,20 @@ const colorNameMapping = {
     'tirkizna': 'Tirkizna'
 };
 
+// Dostupne veličine
+const availableSizes = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'];
+
 const ProductDetails = () => {
     const { id } = useParams();
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [selectedSize, setSelectedSize] = useState('L');
+    const [selectedSize, setSelectedSize] = useState(null);
     const [selectedColor, setSelectedColor] = useState(null);
     const [quantity, setQuantity] = useState(1);
-
-    const sizes = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'];
+    const [addedToCart, setAddedToCart] = useState(false);
+    const [validationError, setValidationError] = useState(null);
+    const { addToCart } = useCart();
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -55,6 +60,8 @@ const ProductDetails = () => {
                 // Postavi prvi dostupan size i color kao selektovan
                 if (response.data.product.sizes?.length > 0) {
                     setSelectedSize(response.data.product.sizes[0]);
+                } else {
+                    setSelectedSize(availableSizes[3]); // Default 'L'
                 }
                 if (response.data.product.colors?.length > 0) {
                     setSelectedColor(response.data.product.colors[0]);
@@ -74,6 +81,43 @@ const ProductDetails = () => {
         const newQuantity = quantity + value;
         if (newQuantity >= 1 && newQuantity <= 10) {
             setQuantity(newQuantity);
+        }
+    };
+
+    const handleAddToCart = () => {
+        setValidationError(null);
+
+        if (!selectedSize) {
+            setValidationError('Molimo izaberite veličinu');
+            return;
+        }
+
+        if (product.colors && product.colors.length > 0 && !selectedColor) {
+            setValidationError('Molimo izaberite boju');
+            return;
+        }
+
+        const cartItem = {
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: `${import.meta.env.VITE_API_URL}/storage/${product.image}`,
+            size: selectedSize,
+            color: selectedColor,
+            quantity: quantity,
+            colors: product.colors // Dodajemo informaciju o dostupnim bojama
+        };
+
+        const success = addToCart(cartItem);
+        
+        if (success) {
+            setAddedToCart(true);
+            setValidationError(null);
+
+            // Reset the "Added to cart" message after 2 seconds
+            setTimeout(() => {
+                setAddedToCart(false);
+            }, 2000);
         }
     };
 
@@ -165,7 +209,7 @@ const ProductDetails = () => {
                                     Veličina
                                 </h3>
                                 <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
-                                    {sizes.map((size) => (
+                                    {(product?.sizes?.length > 0 ? product.sizes : availableSizes).map((size) => (
                                         <button
                                             key={size}
                                             onClick={() => setSelectedSize(size)}
@@ -230,13 +274,35 @@ const ProductDetails = () => {
                                     </button>
                                 </div>
                             </div>
+
+                            {/* Validation Error */}
+                            <AnimatePresence>
+                                {validationError && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        className="flex items-center space-x-2 text-red-600 bg-red-50 px-4 py-2 rounded-lg"
+                                    >
+                                        <ExclamationCircleIcon className="h-5 w-5" />
+                                        <p className="text-sm">{validationError}</p>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
 
                         <div className="space-y-6 mt-6">
                             {/* Dugme za dodavanje u korpu */}
-                            <button className="w-full h-14 bg-gray-900 text-white rounded-2xl hover:bg-gray-800 transition-colors duration-200 flex items-center justify-center space-x-2 text-sm font-medium">
+                            <button 
+                                onClick={handleAddToCart}
+                                className={`w-full h-14 rounded-2xl transition-colors duration-200 flex items-center justify-center space-x-2 text-sm font-medium ${
+                                    addedToCart 
+                                        ? 'bg-green-600 hover:bg-green-700 text-white'
+                                        : 'bg-gray-900 hover:bg-gray-800 text-white'
+                                }`}
+                            >
                                 <ShoppingBagIcon className="h-5 w-5" />
-                                <span>Dodaj u korpu</span>
+                                <span>{addedToCart ? 'Dodato u korpu!' : 'Dodaj u korpu'}</span>
                             </button>
 
                             {/* Dodatne informacije o dostavi */}
@@ -310,7 +376,7 @@ const ProductDetails = () => {
                                         </tr>
                                     </thead>
                                     <tbody className="bg-white divide-y divide-gray-200">
-                                        {sizes.map((size, index) => (
+                                        {availableSizes.map((size, index) => (
                                             <tr key={size} className={index % 2 === 0 ? 'bg-gray-50' : ''}>
                                                 <td className="px-4 py-2 text-sm text-gray-900">{size}</td>
                                                 <td className="px-4 py-2 text-sm text-gray-600">{90 + index * 4}</td>
