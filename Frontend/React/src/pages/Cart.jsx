@@ -80,51 +80,41 @@ const Cart = () => {
           <div className="lg:w-96">
             <div className="bg-white rounded-2xl shadow-sm p-6 sticky top-28">
               <h2 className="text-lg font-semibold text-gray-900 mb-6">
-                Pregled porudžbine ({getProductText(cart.length)})
+                Pregled porudžbine
               </h2>
               
               <div className="space-y-4 mb-6">
                 <div className="flex justify-between text-gray-600">
-                  <span>Međuzbir:</span>
+                  <span>Cena proizvoda:</span>
                   <span>{total.toFixed(2)} RSD</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
-                  <span>Dostava (plaćanje pouzećem):</span>
-                  <span>Plaća se kuriru</span>
+                  <span>Dostava:</span>
+                  <span>Plaćanje pouzećem</span>
                 </div>
                 <div className="border-t border-gray-200 pt-4">
                   <div className="flex justify-between text-lg font-semibold text-gray-900">
                     <span>Ukupno za plaćanje:</span>
-                    <span>{finalTotal} RSD + dostava</span>
+                    <span>{finalTotal} RSD</span>
                   </div>
+                  <p className="text-sm text-gray-500 mt-2 text-center">
+                    Plaćanje pouzećem prilikom isporuke
+                  </p>
                 </div>
               </div>
 
-              <div className="space-y-4">
-                <div className="mt-6">
-                  <Link
-                    to="/checkout"
-                    className="w-full flex items-center justify-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gray-900 hover:bg-gray-800"
-                  >
-                    Nastavi na plaćanje
-                  </Link>
-                </div>
-              </div>
-
-              <div className="mt-6 text-center text-sm text-gray-500">
-                <div className="flex items-center justify-center">
-                  <TruckIcon className="h-5 w-5 mr-2" />
-                  Plaćanje pouzećem prilikom isporuke
-                </div>
-              </div>
+              <Link
+                to="/checkout"
+                className="w-full flex items-center justify-center px-6 py-4 text-base font-medium rounded-xl text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-200"
+              >
+                Nastavi na plaćanje
+              </Link>
 
               {/* Dodatne informacije */}
               <div className="mt-6 pt-6 border-t border-gray-200">
-                <div className="space-y-4">
-                  <div className="flex items-center text-sm text-gray-500">
-                    <ShieldCheckIcon className="w-5 h-5 mr-2 text-gray-400" />
-                    Sigurno plaćanje i zaštita podataka
-                  </div>
+                <div className="flex items-center justify-center text-sm text-gray-500">
+                  <ShieldCheckIcon className="w-5 h-5 mr-2 text-gray-400" />
+                  Sigurno plaćanje i zaštita podataka
                 </div>
               </div>
             </div>

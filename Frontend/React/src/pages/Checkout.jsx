@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { motion } from 'framer-motion';
-import { ExclamationCircleIcon, ShoppingBagIcon, TruckIcon, ChevronDownIcon, CheckIcon } from '@heroicons/react/24/outline';
+import { ExclamationCircleIcon, ShoppingBagIcon, TruckIcon, ChevronDownIcon, CheckIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
 
 // Lista svih zemalja sveta
 const countries = [
@@ -719,19 +719,19 @@ const Checkout = () => {
               
               <div className="space-y-4 mb-6">
                 <div className="flex justify-between text-gray-600">
-                  <span>Međuzbir:</span>
+                  <span>Cena proizvoda:</span>
                   <span>{total.toFixed(2)} RSD</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
-                  <span>Dostava (plaćanje pouzećem):</span>
-                  <span>Plaća se kuriru</span>
+                  <span>Dostava:</span>
+                  <span>Plaćanje pouzećem</span>
                 </div>
                 <div className="border-t border-gray-200 pt-4">
                   <div className="flex justify-between text-lg font-semibold text-gray-900">
                     <span>Ukupno za plaćanje:</span>
-                    <span>{finalTotal} RSD + dostava</span>
+                    <span>{finalTotal} RSD</span>
                   </div>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-sm text-gray-500 mt-2 text-center">
                     Plaćanje pouzećem prilikom isporuke
                   </p>
                 </div>
@@ -741,10 +741,8 @@ const Checkout = () => {
                 type="submit"
                 onClick={handleSubmit}
                 disabled={isSubmitting}
-                className={`w-full flex items-center justify-center px-6 py-4 text-base font-medium rounded-xl text-white transition-colors duration-200 ${
-                  isSubmitting
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-gray-900 hover:bg-gray-800'
+                className={`w-full flex items-center justify-center px-6 py-4 text-base font-medium rounded-xl text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-200 ${
+                  isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >
                 {isSubmitting ? 'Slanje porudžbine...' : 'Potvrdi porudžbinu'}
@@ -752,15 +750,9 @@ const Checkout = () => {
 
               {/* Dodatne informacije */}
               <div className="mt-6 pt-6 border-t border-gray-200">
-                <div className="space-y-4">
-                  <div className="flex items-center text-sm text-gray-500">
-                    <TruckIcon className="w-5 h-5 mr-2 text-gray-400" />
-                    Dostava kurirskom službom
-                  </div>
-                  <div className="flex items-center text-sm text-gray-500">
-                    <ShoppingBagIcon className="w-5 h-5 mr-2 text-gray-400" />
-                    {cart.length} {cart.length === 1 ? 'proizvod' : 'proizvoda'} u korpi
-                  </div>
+                <div className="flex items-center justify-center text-sm text-gray-500">
+                  <ShieldCheckIcon className="w-5 h-5 mr-2 text-gray-400" />
+                  Sigurno plaćanje i zaštita podataka
                 </div>
               </div>
             </div>
