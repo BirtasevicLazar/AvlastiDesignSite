@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { motion } from 'framer-motion';
-import { ExclamationCircleIcon, ShoppingBagIcon, TruckIcon, ChevronDownIcon, CheckIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ExclamationCircleIcon, ShoppingBagIcon, TruckIcon, ChevronDownIcon, CheckIcon, ShieldCheckIcon, ChevronLeftIcon, CheckCircleIcon, XCircleIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import axiosInstance from '../utils/axios';
 
 // Lista svih zemalja sveta
 const countries = [
@@ -328,9 +329,83 @@ const CountrySelect = ({ value, onChange, error }) => {
   );
 };
 
+const OrderStatusModal = ({ isOpen, status, onClose }) => {
+    return (
+        <AnimatePresence>
+            {isOpen && (
+                <>
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50"
+                        onClick={onClose}
+                    />
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm z-50"
+                    >
+                        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+                            <div className="p-6">
+                                <div className="flex justify-end">
+                                    <button
+                                        onClick={onClose}
+                                        className="p-1 text-gray-400 hover:text-gray-500 transition-colors"
+                                    >
+                                        <XMarkIcon className="w-5 h-5" />
+                                    </button>
+                                </div>
+                                <div className="text-center">
+                                    {status === 'success' ? (
+                                        <>
+                                            <div className="mx-auto flex items-center justify-center w-12 h-12 rounded-full bg-green-100 mb-4">
+                                                <CheckCircleIcon className="w-6 h-6 text-green-600" />
+                                            </div>
+                                            <h3 className="text-lg font-medium text-gray-900 mb-2">
+                                                Porudžbina je uspešno kreirana
+                                            </h3>
+                                            <p className="text-sm text-gray-500 mb-6">
+                                                Hvala vam na poverenju! Vaša porudžbina je uspešno primljena i biće obrađena u najkraćem roku.
+                                            </p>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <div className="mx-auto flex items-center justify-center w-12 h-12 rounded-full bg-red-100 mb-4">
+                                                <XCircleIcon className="w-6 h-6 text-red-600" />
+                                            </div>
+                                            <h3 className="text-lg font-medium text-gray-900 mb-2">
+                                                Greška pri kreiranju porudžbine
+                                            </h3>
+                                            <p className="text-sm text-gray-500 mb-6">
+                                                Došlo je do greške prilikom kreiranja porudžbine. Molimo vas da pokušate ponovo.
+                                            </p>
+                                        </>
+                                    )}
+                                    <button
+                                        onClick={onClose}
+                                        className={`w-full py-3 px-4 rounded-xl text-white font-medium ${
+                                            status === 'success' 
+                                                ? 'bg-green-600 hover:bg-green-700' 
+                                                : 'bg-red-600 hover:bg-red-700'
+                                        } transition-colors`}
+                                    >
+                                        {status === 'success' ? 'U redu' : 'Pokušaj ponovo'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </motion.div>
+                </>
+            )}
+        </AnimatePresence>
+    );
+};
+
 const Checkout = () => {
   const navigate = useNavigate();
-  const { cart, total } = useCart();
+  const { cart, total, clearCart } = useCart();
   const finalTotal = Number(total).toFixed(2);
 
   const [formData, setFormData] = useState({
@@ -350,6 +425,8 @@ const Checkout = () => {
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [orderStatus, setOrderStatus] = useState(null);
 
   const validateForm = () => {
     const newErrors = {};
@@ -411,31 +488,36 @@ const Checkout = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const validationErrors = validateForm();
     
-    if (!validateForm()) {
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
       return;
     }
 
     setIsSubmitting(true);
+    setErrors({});
 
     try {
-      // TODO: Implementirati API poziv za čuvanje porudžbine
-      console.log('Order data:', { 
-        ...formData, 
-        items: cart, 
-        total: finalTotal,
-        countryName: countries.find(c => c.code === formData.country)?.name 
-      });
-      
-      // Simuliramo uspešno slanje (ovo ćemo zameniti pravim API pozivom kasnije)
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Očistiti korpu i preusmeriti na stranicu uspeha
-      // clearCart();
-      navigate('/success');
+      const orderData = {
+        ...formData,
+        items: cart.map(item => ({
+          id: item.id,
+          size: item.size,
+          color: item.color,
+          quantity: item.quantity,
+          price: item.price
+        })),
+        total: finalTotal
+      };
+
+      await axiosInstance.post('/api/orders', orderData);
+      setOrderStatus('success');
+      setShowModal(true);
     } catch (error) {
-      console.error('Error submitting order:', error);
-      setErrors({ submit: 'Došlo je do greške prilikom slanja porudžbine. Molimo pokušajte ponovo.' });
+      console.error('Error creating order:', error);
+      setOrderStatus('error');
+      setShowModal(true);
     } finally {
       setIsSubmitting(false);
     }
@@ -456,310 +538,325 @@ const Checkout = () => {
     }
   };
 
+  const handleModalClose = () => {
+    setShowModal(false);
+    if (orderStatus === 'success') {
+        clearCart();
+        navigate('/');
+    }
+  };
+
   if (cart.length === 0) {
     navigate('/cart');
     return null;
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-28 pb-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Forma za unos podataka */}
-          <div className="flex-grow">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-white rounded-2xl shadow-sm p-6 md:p-8"
-            >
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                Podaci za dostavu
-              </h2>
-
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Email i Telefon */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                      Email adresa *
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      className={`w-full px-4 py-2 rounded-lg border ${
-                        errors.email ? 'border-red-500' : 'border-gray-200'
-                      } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                      placeholder="vasa@email.com"
-                    />
-                    {errors.email && (
-                      <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-                    )}
-                  </div>
-                  <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                      Broj telefona *
-                    </label>
-                    <input
-                      type="tel"
-                      id="phone"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      className={`w-full px-4 py-2 rounded-lg border ${
-                        errors.phone ? 'border-red-500' : 'border-gray-200'
-                      } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                      placeholder="+381 60 123 4567"
-                    />
-                    {errors.phone && (
-                      <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Ime i Prezime */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
-                      Ime *
-                    </label>
-                    <input
-                      type="text"
-                      id="firstName"
-                      name="firstName"
-                      value={formData.firstName}
-                      onChange={handleChange}
-                      className={`w-full px-4 py-2 rounded-lg border ${
-                        errors.firstName ? 'border-red-500' : 'border-gray-200'
-                      } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                    />
-                    {errors.firstName && (
-                      <p className="mt-1 text-sm text-red-600">{errors.firstName}</p>
-                    )}
-                  </div>
-                  <div>
-                    <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
-                      Prezime *
-                    </label>
-                    <input
-                      type="text"
-                      id="lastName"
-                      name="lastName"
-                      value={formData.lastName}
-                      onChange={handleChange}
-                      className={`w-full px-4 py-2 rounded-lg border ${
-                        errors.lastName ? 'border-red-500' : 'border-gray-200'
-                      } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                    />
-                    {errors.lastName && (
-                      <p className="mt-1 text-sm text-red-600">{errors.lastName}</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Zemlja i Grad */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1">
-                      Zemlja *
-                    </label>
-                    <CountrySelect
-                      value={formData.country}
-                      onChange={(code) => handleChange({ target: { name: 'country', value: code } })}
-                      error={errors.country}
-                    />
-                    {errors.country && (
-                      <p className="mt-1 text-sm text-red-600">{errors.country}</p>
-                    )}
-                  </div>
-                  <div>
-                    <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
-                      Grad *
-                    </label>
-                    <input
-                      type="text"
-                      id="city"
-                      name="city"
-                      value={formData.city}
-                      onChange={handleChange}
-                      className={`w-full px-4 py-2 rounded-lg border ${
-                        errors.city ? 'border-red-500' : 'border-gray-200'
-                      } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                    />
-                    {errors.city && (
-                      <p className="mt-1 text-sm text-red-600">{errors.city}</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Ulica i broj */}
-                <div className="grid grid-cols-3 gap-6">
-                  <div className="col-span-2">
-                    <label htmlFor="street" className="block text-sm font-medium text-gray-700 mb-1">
-                      Ulica *
-                    </label>
-                    <input
-                      type="text"
-                      id="street"
-                      name="street"
-                      value={formData.street}
-                      onChange={handleChange}
-                      className={`w-full px-4 py-2 rounded-lg border ${
-                        errors.street ? 'border-red-500' : 'border-gray-200'
-                      } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                    />
-                    {errors.street && (
-                      <p className="mt-1 text-sm text-red-600">{errors.street}</p>
-                    )}
-                  </div>
-                  <div>
-                    <label htmlFor="houseNumber" className="block text-sm font-medium text-gray-700 mb-1">
-                      Broj *
-                    </label>
-                    <input
-                      type="text"
-                      id="houseNumber"
-                      name="houseNumber"
-                      value={formData.houseNumber}
-                      onChange={handleChange}
-                      className={`w-full px-4 py-2 rounded-lg border ${
-                        errors.houseNumber ? 'border-red-500' : 'border-gray-200'
-                      } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                    />
-                    {errors.houseNumber && (
-                      <p className="mt-1 text-sm text-red-600">{errors.houseNumber}</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Poštanski broj, Sprat i Stan */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div>
-                    <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700 mb-1">
-                      Poštanski broj *
-                    </label>
-                    <input
-                      type="text"
-                      id="postalCode"
-                      name="postalCode"
-                      value={formData.postalCode}
-                      onChange={handleChange}
-                      className={`w-full px-4 py-2 rounded-lg border ${
-                        errors.postalCode ? 'border-red-500' : 'border-gray-200'
-                      } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                      placeholder="11000"
-                    />
-                    {errors.postalCode && (
-                      <p className="mt-1 text-sm text-red-600">{errors.postalCode}</p>
-                    )}
-                  </div>
-                  <div>
-                    <label htmlFor="floor" className="block text-sm font-medium text-gray-700 mb-1">
-                      Sprat
-                    </label>
-                    <input
-                      type="text"
-                      id="floor"
-                      name="floor"
-                      value={formData.floor}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="apartment" className="block text-sm font-medium text-gray-700 mb-1">
-                      Stan
-                    </label>
-                    <input
-                      type="text"
-                      id="apartment"
-                      name="apartment"
-                      value={formData.apartment}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                </div>
-
-                {/* Napomena */}
-                <div>
-                  <label htmlFor="note" className="block text-sm font-medium text-gray-700 mb-1">
-                    Napomena
-                  </label>
-                  <textarea
-                    id="note"
-                    name="note"
-                    value={formData.note}
-                    onChange={handleChange}
-                    rows={3}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Dodatne napomene za dostavu..."
-                  />
-                </div>
-
-                {/* Greška pri slanju */}
-                {errors.submit && (
-                  <div className="bg-red-50 p-4 rounded-lg flex items-center space-x-2 text-red-600">
-                    <ExclamationCircleIcon className="h-5 w-5" />
-                    <p>{errors.submit}</p>
-                  </div>
-                )}
-              </form>
-            </motion.div>
-          </div>
-
-          {/* Pregled porudžbine */}
-          <div className="lg:w-96">
-            <div className="bg-white rounded-2xl shadow-sm p-6 sticky top-28">
-              <h2 className="text-lg font-semibold text-gray-900 mb-6">
-                Pregled porudžbine
-              </h2>
-              
-              <div className="space-y-4 mb-6">
-                <div className="flex justify-between text-gray-600">
-                  <span>Cena proizvoda:</span>
-                  <span>{total.toFixed(2)} RSD</span>
-                </div>
-                <div className="flex justify-between text-gray-600">
-                  <span>Dostava:</span>
-                  <span>Plaćanje pouzećem</span>
-                </div>
-                <div className="border-t border-gray-200 pt-4">
-                  <div className="flex justify-between text-lg font-semibold text-gray-900">
-                    <span>Ukupno za plaćanje:</span>
-                    <span>{finalTotal} RSD</span>
-                  </div>
-                  <p className="text-sm text-gray-500 mt-2 text-center">
-                    Plaćanje pouzećem prilikom isporuke
-                  </p>
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                onClick={handleSubmit}
-                disabled={isSubmitting}
-                className={`w-full flex items-center justify-center px-6 py-4 text-base font-medium rounded-xl text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-200 ${
-                  isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
+    <>
+      <div className="min-h-screen bg-gray-50 pt-28 pb-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Forma za unos podataka */}
+            <div className="flex-grow">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-white rounded-2xl shadow-sm p-6 md:p-8"
               >
-                {isSubmitting ? 'Slanje porudžbine...' : 'Potvrdi porudžbinu'}
-              </button>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                  Podaci za dostavu
+                </h2>
 
-              {/* Dodatne informacije */}
-              <div className="mt-6 pt-6 border-t border-gray-200">
-                <div className="flex items-center justify-center text-sm text-gray-500">
-                  <ShieldCheckIcon className="w-5 h-5 mr-2 text-gray-400" />
-                  Sigurno plaćanje i zaštita podataka
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  {/* Email i Telefon */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                        Email adresa *
+                      </label>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className={`w-full px-4 py-2 rounded-lg border ${
+                          errors.email ? 'border-red-500' : 'border-gray-200'
+                        } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                        placeholder="vasa@email.com"
+                      />
+                      {errors.email && (
+                        <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                        Broj telefona *
+                      </label>
+                      <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        className={`w-full px-4 py-2 rounded-lg border ${
+                          errors.phone ? 'border-red-500' : 'border-gray-200'
+                        } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                        placeholder="+381 60 123 4567"
+                      />
+                      {errors.phone && (
+                        <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Ime i Prezime */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
+                        Ime *
+                      </label>
+                      <input
+                        type="text"
+                        id="firstName"
+                        name="firstName"
+                        value={formData.firstName}
+                        onChange={handleChange}
+                        className={`w-full px-4 py-2 rounded-lg border ${
+                          errors.firstName ? 'border-red-500' : 'border-gray-200'
+                        } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                      />
+                      {errors.firstName && (
+                        <p className="mt-1 text-sm text-red-600">{errors.firstName}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
+                        Prezime *
+                      </label>
+                      <input
+                        type="text"
+                        id="lastName"
+                        name="lastName"
+                        value={formData.lastName}
+                        onChange={handleChange}
+                        className={`w-full px-4 py-2 rounded-lg border ${
+                          errors.lastName ? 'border-red-500' : 'border-gray-200'
+                        } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                      />
+                      {errors.lastName && (
+                        <p className="mt-1 text-sm text-red-600">{errors.lastName}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Zemlja i Grad */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1">
+                        Zemlja *
+                      </label>
+                      <CountrySelect
+                        value={formData.country}
+                        onChange={(code) => handleChange({ target: { name: 'country', value: code } })}
+                        error={errors.country}
+                      />
+                      {errors.country && (
+                        <p className="mt-1 text-sm text-red-600">{errors.country}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
+                        Grad *
+                      </label>
+                      <input
+                        type="text"
+                        id="city"
+                        name="city"
+                        value={formData.city}
+                        onChange={handleChange}
+                        className={`w-full px-4 py-2 rounded-lg border ${
+                          errors.city ? 'border-red-500' : 'border-gray-200'
+                        } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                      />
+                      {errors.city && (
+                        <p className="mt-1 text-sm text-red-600">{errors.city}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Ulica i broj */}
+                  <div className="grid grid-cols-3 gap-6">
+                    <div className="col-span-2">
+                      <label htmlFor="street" className="block text-sm font-medium text-gray-700 mb-1">
+                        Ulica *
+                      </label>
+                      <input
+                        type="text"
+                        id="street"
+                        name="street"
+                        value={formData.street}
+                        onChange={handleChange}
+                        className={`w-full px-4 py-2 rounded-lg border ${
+                          errors.street ? 'border-red-500' : 'border-gray-200'
+                        } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                      />
+                      {errors.street && (
+                        <p className="mt-1 text-sm text-red-600">{errors.street}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label htmlFor="houseNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                        Broj *
+                      </label>
+                      <input
+                        type="text"
+                        id="houseNumber"
+                        name="houseNumber"
+                        value={formData.houseNumber}
+                        onChange={handleChange}
+                        className={`w-full px-4 py-2 rounded-lg border ${
+                          errors.houseNumber ? 'border-red-500' : 'border-gray-200'
+                        } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                      />
+                      {errors.houseNumber && (
+                        <p className="mt-1 text-sm text-red-600">{errors.houseNumber}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Poštanski broj, Sprat i Stan */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                      <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700 mb-1">
+                        Poštanski broj *
+                      </label>
+                      <input
+                        type="text"
+                        id="postalCode"
+                        name="postalCode"
+                        value={formData.postalCode}
+                        onChange={handleChange}
+                        className={`w-full px-4 py-2 rounded-lg border ${
+                          errors.postalCode ? 'border-red-500' : 'border-gray-200'
+                        } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                        placeholder="11000"
+                      />
+                      {errors.postalCode && (
+                        <p className="mt-1 text-sm text-red-600">{errors.postalCode}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label htmlFor="floor" className="block text-sm font-medium text-gray-700 mb-1">
+                        Sprat
+                      </label>
+                      <input
+                        type="text"
+                        id="floor"
+                        name="floor"
+                        value={formData.floor}
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="apartment" className="block text-sm font-medium text-gray-700 mb-1">
+                        Stan
+                      </label>
+                      <input
+                        type="text"
+                        id="apartment"
+                        name="apartment"
+                        value={formData.apartment}
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Napomena */}
+                  <div>
+                    <label htmlFor="note" className="block text-sm font-medium text-gray-700 mb-1">
+                      Napomena
+                    </label>
+                    <textarea
+                      id="note"
+                      name="note"
+                      value={formData.note}
+                      onChange={handleChange}
+                      rows={3}
+                      className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Dodatne napomene za dostavu..."
+                    />
+                  </div>
+
+                  {/* Greška pri slanju */}
+                  {errors.submit && (
+                    <div className="bg-red-50 p-4 rounded-lg flex items-center space-x-2 text-red-600">
+                      <ExclamationCircleIcon className="h-5 w-5" />
+                      <p>{errors.submit}</p>
+                    </div>
+                  )}
+                </form>
+              </motion.div>
+            </div>
+
+            {/* Pregled porudžbine */}
+            <div className="lg:w-96">
+              <div className="bg-white rounded-2xl shadow-sm p-6 sticky top-28">
+                <h2 className="text-lg font-semibold text-gray-900 mb-6">
+                  Pregled porudžbine
+                </h2>
+                
+                <div className="space-y-4 mb-6">
+                  <div className="flex justify-between text-gray-600">
+                    <span>Cena proizvoda:</span>
+                    <span>{total.toFixed(2)} RSD</span>
+                  </div>
+                  <div className="flex justify-between text-gray-600">
+                    <span>Dostava:</span>
+                    <span>Plaćanje pouzećem</span>
+                  </div>
+                  <div className="border-t border-gray-200 pt-4">
+                    <div className="flex justify-between text-lg font-semibold text-gray-900">
+                      <span>Ukupno za plaćanje:</span>
+                      <span>{finalTotal} RSD</span>
+                    </div>
+                    <p className="text-sm text-gray-500 mt-2 text-center">
+                      Plaćanje pouzećem prilikom isporuke
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
+                  className={`w-full flex items-center justify-center px-6 py-4 text-base font-medium rounded-xl text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-200 ${
+                    isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                >
+                  {isSubmitting ? 'Slanje porudžbine...' : 'Potvrdi porudžbinu'}
+                </button>
+
+                {/* Dodatne informacije */}
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <div className="flex items-center justify-center text-sm text-gray-500">
+                    <ShieldCheckIcon className="w-5 h-5 mr-2 text-gray-400" />
+                    Sigurno plaćanje i zaštita podataka
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+      <OrderStatusModal 
+        isOpen={showModal} 
+        status={orderStatus} 
+        onClose={handleModalClose}
+      />
+    </>
   );
 };
 

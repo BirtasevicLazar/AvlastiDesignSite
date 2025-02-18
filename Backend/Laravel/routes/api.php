@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\AdminController;
 use App\Http\Controllers\HeroSettingsController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PopularProductController;
+use App\Http\Controllers\OrderController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -33,6 +34,10 @@ Route::prefix('admin')->group(function () {
         Route::get('/popular-products/available', [PopularProductController::class, 'getAvailableProducts']);
         Route::post('/popular-products/order', [PopularProductController::class, 'updateOrder']);
         Route::apiResource('popular-products', PopularProductController::class);
+
+        // Orders routes
+        Route::get('/orders', [OrderController::class, 'index']);
+        Route::patch('/orders/{id}/status', [OrderController::class, 'updateStatus']);
     });
 });
 
@@ -41,3 +46,4 @@ Route::get('/hero-settings', [HeroSettingsController::class, 'index']);
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{product}', [ProductController::class, 'show']);
 Route::get('/popular-products', [PopularProductController::class, 'index']);
+Route::post('/orders', [OrderController::class, 'store']);

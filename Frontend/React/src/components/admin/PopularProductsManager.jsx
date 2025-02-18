@@ -1,7 +1,13 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import axiosInstance from '../../utils/axios';
-import { TrashIcon, ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/outline';
+import { 
+    TrashIcon, 
+    ArrowUpIcon, 
+    ArrowDownIcon,
+    PlusIcon,
+    StarIcon
+} from '@heroicons/react/24/outline';
 
 const PopularProductsManager = () => {
     const [popularProducts, setPopularProducts] = useState([]);
@@ -100,95 +106,121 @@ const PopularProductsManager = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="bg-white rounded-lg shadow px-5 py-6 sm:px-6"
+            className="bg-white rounded-2xl shadow-sm"
         >
-            <div className="mb-6">
-                <h2 className="text-lg font-medium text-gray-900">Popularni Proizvodi</h2>
-                <p className="mt-1 text-sm text-gray-600">
-                    Upravljajte proizvodima koji se prikazuju u sekciji popularnih proizvoda.
-                </p>
+            <div className="border-b border-gray-100">
+                <div className="px-6 py-5">
+                    <h2 className="text-xl font-semibold text-gray-900">Popularni Proizvodi</h2>
+                    <p className="mt-1 text-sm text-gray-500">
+                        Upravljajte proizvodima koji se prikazuju u sekciji popularnih proizvoda.
+                    </p>
+                </div>
             </div>
 
             {message.text && (
-                <div className={`mb-4 p-4 rounded-lg ${
-                    message.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
+                <div className={`mx-6 mt-6 p-4 rounded-xl ${
+                    message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'
                 }`}>
                     {message.text}
                 </div>
             )}
 
-            <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700">
-                    Dodaj novi popularni proizvod
-                </label>
-                <div className="mt-2 flex gap-4">
-                    <select
-                        value={selectedProduct}
-                        onChange={(e) => setSelectedProduct(e.target.value)}
-                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    >
-                        <option value="">Izaberite proizvod</option>
-                        {availableProducts.map((product) => (
-                            <option key={product.id} value={product.id}>
-                                {product.name} - {product.price} RSD
-                            </option>
-                        ))}
-                    </select>
-                    <button
-                        type="button"
-                        onClick={handleAddPopular}
-                        disabled={!selectedProduct || loading}
-                        className={`inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white 
-                            ${loading || !selectedProduct ? 'bg-indigo-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'}`}
-                    >
-                        Dodaj
-                    </button>
-                </div>
-            </div>
-
-            <div className="mt-8">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Trenutni popularni proizvodi</h3>
-                <div className="space-y-4">
-                    {popularProducts.map(({ id, product }, index) => (
-                        <div
-                            key={id}
-                            className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg"
+            <div className="p-6 space-y-8">
+                {/* Dodavanje novog popularnog proizvoda */}
+                <div className="bg-gray-50 rounded-xl p-6">
+                    <h3 className="text-sm font-medium text-gray-900 mb-4">Dodaj novi popularni proizvod</h3>
+                    <div className="flex flex-col sm:flex-row gap-4">
+                        <select
+                            value={selectedProduct}
+                            onChange={(e) => setSelectedProduct(e.target.value)}
+                            className="flex-grow rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                         >
-                            <div className="flex-shrink-0 w-16 h-16">
-                                <img
-                                    src={`${import.meta.env.VITE_API_URL}/storage/${product.image}`}
-                                    alt={product.name}
-                                    className="w-full h-full object-cover rounded"
-                                />
+                            <option value="">Izaberite proizvod</option>
+                            {availableProducts.map((product) => (
+                                <option key={product.id} value={product.id}>
+                                    {product.name} - {product.price} RSD
+                                </option>
+                            ))}
+                        </select>
+                        <button
+                            type="button"
+                            onClick={handleAddPopular}
+                            disabled={!selectedProduct || loading}
+                            className={`inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-xl shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+                                loading || !selectedProduct ? 'opacity-50 cursor-not-allowed' : ''
+                            }`}
+                        >
+                            <PlusIcon className="w-5 h-5 mr-2" />
+                            Dodaj
+                        </button>
+                    </div>
+                </div>
+
+                {/* Lista popularnih proizvoda */}
+                <div className="space-y-4">
+                    <h3 className="text-sm font-medium text-gray-900">Trenutni popularni proizvodi</h3>
+                    <div className="bg-gray-50 rounded-xl divide-y divide-gray-100">
+                        {popularProducts.map(({ id, product }, index) => (
+                            <div
+                                key={id}
+                                className="flex items-center gap-4 p-4 first:rounded-t-xl last:rounded-b-xl hover:bg-gray-100 transition-colors"
+                            >
+                                <div className="flex-shrink-0">
+                                    <div className="w-16 h-16 rounded-lg overflow-hidden bg-white">
+                                        <img
+                                            src={`${import.meta.env.VITE_API_URL}/storage/${product.image}`}
+                                            alt={product.name}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="flex-grow min-w-0">
+                                    <h4 className="text-sm font-medium text-gray-900 truncate">{product.name}</h4>
+                                    <p className="text-sm text-gray-500">{product.price} RSD</p>
+                                    <div className="mt-1 flex items-center">
+                                        <StarIcon className="w-4 h-4 text-yellow-400 mr-1" />
+                                        <span className="text-xs text-gray-500">Popularni proizvod #{index + 1}</span>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        onClick={() => handleReorder(id, 'up')}
+                                        disabled={index === 0}
+                                        className={`p-1.5 rounded-lg transition-colors ${
+                                            index === 0 
+                                                ? 'text-gray-300 cursor-not-allowed' 
+                                                : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200'
+                                        }`}
+                                    >
+                                        <ArrowUpIcon className="w-5 h-5" />
+                                    </button>
+                                    <button
+                                        onClick={() => handleReorder(id, 'down')}
+                                        disabled={index === popularProducts.length - 1}
+                                        className={`p-1.5 rounded-lg transition-colors ${
+                                            index === popularProducts.length - 1
+                                                ? 'text-gray-300 cursor-not-allowed'
+                                                : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200'
+                                        }`}
+                                    >
+                                        <ArrowDownIcon className="w-5 h-5" />
+                                    </button>
+                                    <button
+                                        onClick={() => handleRemove(id)}
+                                        className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                    >
+                                        <TrashIcon className="w-5 h-5" />
+                                    </button>
+                                </div>
                             </div>
-                            <div className="flex-grow">
-                                <h4 className="text-sm font-medium text-gray-900">{product.name}</h4>
-                                <p className="text-sm text-gray-500">{product.price} RSD</p>
+                        ))}
+                        {popularProducts.length === 0 && (
+                            <div className="p-8 text-center">
+                                <StarIcon className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                                <p className="text-sm text-gray-500">Još uvek nema popularnih proizvoda</p>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <button
-                                    onClick={() => handleReorder(id, 'up')}
-                                    disabled={index === 0}
-                                    className={`p-1 rounded-md ${index === 0 ? 'text-gray-400' : 'text-gray-600 hover:bg-gray-100'}`}
-                                >
-                                    <ArrowUpIcon className="h-5 w-5" />
-                                </button>
-                                <button
-                                    onClick={() => handleReorder(id, 'down')}
-                                    disabled={index === popularProducts.length - 1}
-                                    className={`p-1 rounded-md ${index === popularProducts.length - 1 ? 'text-gray-400' : 'text-gray-600 hover:bg-gray-100'}`}
-                                >
-                                    <ArrowDownIcon className="h-5 w-5" />
-                                </button>
-                                <button
-                                    onClick={() => handleRemove(id)}
-                                    className="p-1 rounded-md text-red-600 hover:bg-red-50"
-                                >
-                                    <TrashIcon className="h-5 w-5" />
-                                </button>
-                            </div>
-                        </div>
-                    ))}
+                        )}
+                    </div>
                 </div>
             </div>
         </motion.div>
