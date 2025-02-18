@@ -130,7 +130,7 @@ const PopularProductsManager = () => {
                         <option value="">Izaberite proizvod</option>
                         {availableProducts.map((product) => (
                             <option key={product.id} value={product.id}>
-                                {product.name} - €{product.price}
+                                {product.name} - {product.price} RSD
                             </option>
                         ))}
                     </select>
@@ -163,7 +163,7 @@ const PopularProductsManager = () => {
                             </div>
                             <div className="flex-grow">
                                 <h4 className="text-sm font-medium text-gray-900">{product.name}</h4>
-                                <p className="text-sm text-gray-500">€{product.price}</p>
+                                <p className="text-sm text-gray-500">{product.price} RSD</p>
                             </div>
                             <div className="flex items-center gap-2">
                                 <button

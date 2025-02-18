@@ -153,19 +153,19 @@ const ProductManager = () => {
                             Cena
                         </label>
                         <div className="mt-1 relative rounded-md shadow-sm">
-                            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                <span className="text-gray-500 sm:text-sm">€</span>
-                            </div>
                             <input
                                 type="number"
+                                name="price"
+                                id="price"
+                                className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-3 pr-12 sm:text-sm border-gray-300 rounded-md"
+                                placeholder="0.00"
                                 value={newProduct.price}
                                 onChange={(e) => setNewProduct(prev => ({ ...prev, price: e.target.value }))}
-                                className="block w-full rounded-md border-gray-300 pl-7 pr-12 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                placeholder="0.00"
                                 required
-                                step="0.01"
-                                min="0"
                             />
+                            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <span className="text-gray-500 sm:text-sm">RSD</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -299,7 +299,7 @@ const ProductManager = () => {
                                 }}
                             />
                             <h4 className="text-lg font-medium text-gray-900">{product.name}</h4>
-                            <p className="text-sm text-gray-500 mb-2">€{product.price}</p>
+                            <p className="text-sm text-gray-500 mb-2">{product.price} RSD</p>
                             <div className="flex flex-wrap gap-2 mb-4">
                                 {product.colors.map((color, index) => (
                                     <span

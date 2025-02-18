@@ -92,7 +92,7 @@ const HeroManager = () => {
                         </div>
                         <div>
                             <h4 className="text-sm font-medium text-gray-900">{currentProduct.name}</h4>
-                            <p className="text-sm text-gray-500">€{currentProduct.price}</p>
+                            <p className="text-sm text-gray-500">{currentProduct.price} RSD</p>
                         </div>
                     </div>
                 </div>
@@ -112,7 +112,7 @@ const HeroManager = () => {
                             <option value="">Izaberite proizvod</option>
                             {products.map((product) => (
                                 <option key={product.id} value={product.id}>
-                                    {product.name} - €{product.price}
+                                    {product.name} - {product.price} RSD
                                 </option>
                             ))}
                         </select>

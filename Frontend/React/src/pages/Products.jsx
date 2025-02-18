@@ -247,9 +247,11 @@ const Products = () => {
                                                      product.gender === 'female' ? 'Ženska' : 'Unisex'} majica
                                                 </p>
                                                 <div className="text-center">
-                                                    <span className="text-lg font-medium text-gray-900">
-                                                        €{product.price}
-                                                    </span>
+                                                    <div className="mt-1">
+                                                        <p className="text-lg font-medium text-gray-900">
+                                                            {product.price} RSD
+                                                        </p>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </Link>

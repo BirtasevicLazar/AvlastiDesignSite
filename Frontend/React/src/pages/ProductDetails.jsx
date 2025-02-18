@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeftIcon, ShoppingBagIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, ShoppingBagIcon, ExclamationCircleIcon, TruckIcon } from '@heroicons/react/24/outline';
 import { useCart } from '../context/CartContext';
 import axiosInstance from '../utils/axios';
 
@@ -195,9 +195,12 @@ const ProductDetails = () => {
                                 <h1 className="text-3xl font-bold text-gray-900 text-center lg:text-left">
                                     {product.name}
                                 </h1>
-                                <p className="text-2xl font-medium text-gray-900 text-center lg:text-left">
-                                    €{product.price}
-                                </p>
+                                <div className="mt-4 flex justify-between">
+                                    <h2 className="sr-only">Product information</h2>
+                                    <p className="text-2xl tracking-tight text-gray-900">
+                                        {product.price} RSD
+                                    </p>
+                                </div>
                                 <p className="text-gray-600 leading-relaxed text-center lg:text-left">
                                     {product.description}
                                 </p>
@@ -306,15 +309,11 @@ const ProductDetails = () => {
                             </button>
 
                             {/* Dodatne informacije o dostavi */}
-                            <div className="grid grid-cols-2 gap-4 pt-6 border-t border-gray-100">
-                                <div className="text-center">
-                                    <h4 className="text-sm font-medium text-gray-900 mb-1">Besplatna dostava</h4>
-                                    <p className="text-xs text-gray-600">za porudžbine preko €50</p>
-                                </div>
-                                <div className="text-center">
-                                    <h4 className="text-sm font-medium text-gray-900 mb-1">Sigurna kupovina</h4>
-                                    <p className="text-xs text-gray-600">100% sigurno plaćanje</p>
-                                </div>
+                            <div className="mt-6 flex items-center">
+                                <TruckIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                                <p className="ml-2 text-sm text-gray-500">
+                                    Dostava kurirskom službom
+                                </p>
                             </div>
                         </div>
                     </motion.div>

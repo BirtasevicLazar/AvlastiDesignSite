@@ -89,10 +89,12 @@ const CartItem = ({ item }) => {
             {/* Cena */}
             <div className="text-right">
               <p className="text-sm text-gray-500">Cena po komadu</p>
-              <p className="text-lg font-medium text-gray-900">{item.price} €</p>
-              <p className="text-sm text-gray-500 mt-1">
-                Ukupno: <span className="font-medium text-gray-900">{(item.price * item.quantity).toFixed(2)} €</span>
-              </p>
+              <div className="flex flex-col">
+                <p className="text-lg font-medium text-gray-900">{item.price} RSD</p>
+                <p className="text-sm text-gray-500">
+                  Ukupno: <span className="font-medium text-gray-900">{(item.price * item.quantity).toFixed(2)} RSD</span>
+                </p>
+              </div>
             </div>
           </div>
         </div>

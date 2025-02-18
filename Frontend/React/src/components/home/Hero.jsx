@@ -191,7 +191,10 @@ export default function Hero() {
               <h3 className="text-base font-semibold text-white">Bestseler majica</h3>
               <p className="text-sm text-white/70">Dostupno u više boja</p>
               <div className="mt-2 flex items-center justify-between">
-                <span className="text-base font-medium text-white">€{featuredProduct.price}</span>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-base font-medium text-white">{featuredProduct.name}</h3>
+                  <span className="text-base font-medium text-white">{featuredProduct.price} RSD</span>
+                </div>
                 <button className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors">
                   <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
