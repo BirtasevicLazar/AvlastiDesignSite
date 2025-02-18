@@ -176,33 +176,25 @@ export default function Hero() {
         <motion.div
           initial={{ opacity: 0, x: 100 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 1 }}
-          className="absolute top-1/2 -translate-y-1/2 right-8 z-20 bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20 shadow-2xl max-w-[240px] hidden xl:block"
+          transition={{ delay: 0.2 }}
+          className="absolute top-1/2 -translate-y-1/2 right-8 z-20 bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20 shadow-2xl max-w-[240px] hidden xl:block hover:bg-white/20 transition-all duration-300"
         >
-          <div className="flex flex-col gap-3">
-            <div className="aspect-square bg-gray-100 rounded-xl overflow-hidden">
-              <img 
-                src={`${import.meta.env.VITE_API_URL}/storage/${featuredProduct.image}`}
-                alt={featuredProduct.name}
-                className="h-full w-full object-cover"
-              />
-            </div>
-            <div>
-              <h3 className="text-base font-semibold text-white">Bestseler majica</h3>
-              <p className="text-sm text-white/70">Dostupno u više boja</p>
-              <div className="mt-2 flex items-center justify-between">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-base font-medium text-white">{featuredProduct.name}</h3>
-                  <span className="text-base font-medium text-white">{featuredProduct.price} RSD</span>
-                </div>
-                <button className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors">
-                  <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                </button>
+          <Link to={`/products/${featuredProduct.id}`} className="block">
+            <div className="flex flex-col gap-3">
+              <div className="aspect-square bg-gray-100 rounded-xl overflow-hidden">
+                <img 
+                  src={`${import.meta.env.VITE_API_URL}/storage/${featuredProduct.image}`}
+                  alt={featuredProduct.name}
+                  className="h-full w-full object-cover transform hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+              <div className="text-center">
+                <h3 className="text-base font-semibold text-white">Bestseler majica</h3>
+                <p className="text-sm text-white/70 mb-2">Dostupno u više boja</p>
+                <span className="text-lg font-medium text-white">{featuredProduct.price} RSD</span>
               </div>
             </div>
-          </div>
+          </Link>
         </motion.div>
 
         {/* Scroll indikator */}

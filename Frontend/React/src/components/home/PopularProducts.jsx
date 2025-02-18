@@ -130,16 +130,15 @@ const PopularProducts = () => {
                         modules={[Autoplay, Pagination, Navigation]}
                         className="!pb-12"
                     >
-                        {popularProducts.map(({ product }) => (
+                        {popularProducts.map(({ product }, index) => (
                             <SwiperSlide key={product.id} className="py-4">
-                                <Link to={`/products/${product.id}`}>
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 20 }}
-                                        whileInView={{ opacity: 1, y: 0 }}
-                                        viewport={{ once: true }}
-                                        transition={{ duration: 0.5 }}
-                                        className="h-full bg-white rounded-2xl shadow-sm"
-                                    >
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                                    className="group relative bg-white rounded-2xl shadow-sm overflow-hidden"
+                                >
+                                    <Link to={`/products/${product.id}`} className="block">
                                         <div className="aspect-square w-full p-6">
                                             <div className="relative w-full h-full rounded-xl overflow-hidden bg-gray-50">
                                                 <img
@@ -149,32 +148,52 @@ const PopularProducts = () => {
                                                 />
                                             </div>
                                         </div>
-                                        <div className="px-6 pb-8 text-center">
-                                            <h3 className="text-lg font-medium text-gray-900 mb-1 line-clamp-2 mx-auto">
-                                                {product.name}
-                                            </h3>
-                                            <p className="text-sm text-gray-600 mb-2 text-center">
-                                                {product.gender === 'male' ? 'Muška' :
-                                                 product.gender === 'female' ? 'Ženska' : 'Unisex'} majica
-                                            </p>
-                                            <div className="mt-4 flex justify-between">
-                                              <div>
-                                                <h3 className="text-sm text-gray-700">
-                                                  <Link to={`/product/${product._id}`}>
-                                                    <span aria-hidden="true" className="absolute inset-0" />
-                                                    {product.name}
-                                                  </Link>
-                                                </h3>
-                                              </div>
-                                              <p className="text-sm font-medium text-gray-900">{product.price} RSD</p>
-                                            </div>
-                                        </div>
-                                    </motion.div>
-                                </Link>
+                                    </Link>
+                                    <div className="px-6 pb-8 text-center">
+                                        <h3 className="text-lg font-medium text-gray-900 mb-1 line-clamp-2 mx-auto">
+                                            {product.name}
+                                        </h3>
+                                        <p className="text-sm text-gray-600 mb-2 text-center">
+                                            {product.gender === 'male' ? 'Muška' :
+                                             product.gender === 'female' ? 'Ženska' : 'Unisex'} majica
+                                        </p>
+                                        <p className="text-lg font-medium text-gray-900">
+                                            {product.price} RSD
+                                        </p>
+                                    </div>
+                                </motion.div>
                             </SwiperSlide>
                         ))}
                     </Swiper>
                 </div>
+
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5 }}
+                    className="flex justify-center"
+                >
+                    <Link
+                        to="/products"
+                        className="group inline-flex items-center justify-center bg-gray-900 text-white px-8 py-4 text-sm font-medium rounded-xl hover:bg-gray-800 transition-all duration-200"
+                    >
+                        Pogledaj sve proizvode
+                        <svg 
+                            className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" 
+                            fill="none" 
+                            viewBox="0 0 24 24" 
+                            stroke="currentColor"
+                        >
+                            <path 
+                                strokeLinecap="round" 
+                                strokeLinejoin="round" 
+                                strokeWidth={2} 
+                                d="M17 8l4 4m0 0l-4 4m4-4H3" 
+                            />
+                        </svg>
+                    </Link>
+                </motion.div>
             </div>
         </section>
     );
