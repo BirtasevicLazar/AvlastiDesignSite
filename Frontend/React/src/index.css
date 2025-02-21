@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
 @import "tailwindcss";
 @tailwind base;
 @tailwind components;
@@ -5,10 +7,27 @@
 
 @layer base {
   html {
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Poppins', sans-serif;
   }
   
   body {
     @apply antialiased text-gray-900;
   }
+}
+
+/* Font weights */
+.font-sf-regular {
+  font-weight: 400;
+}
+
+.font-sf-medium {
+  font-weight: 500;
+}
+
+.font-sf-semibold {
+  font-weight: 600;
+}
+
+.font-sf-bold {
+  font-weight: 700;
 }
