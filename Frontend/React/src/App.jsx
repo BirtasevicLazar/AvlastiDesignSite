@@ -13,6 +13,7 @@ import Checkout from './pages/Checkout'
 import ScrollToTop from './components/utils/ScrollToTop'
 import { CartProvider } from './context/CartContext'
 import { NavbarProvider } from './context/NavbarContext'
+import PersonalizedShirt from './pages/PersonalizedShirt'
 
 // Kompleksna skrivena ruta koju je teško pogoditi
 const ADMIN_SECRET_PATH = 'control-panel-secure-x9j2m5'
@@ -37,7 +38,7 @@ function App() {
                                 <Route path="/products/:id" element={<ProductDetails />} />
                                 <Route path="/cart" element={<Cart />} />
                                 <Route path="/checkout" element={<Checkout />} />
-                                
+                                <Route path="/personalized-shirt" element={<PersonalizedShirt />} />
                                 {/* Admin rute */}
                                 <Route path="/admin/login" element={<AdminLogin />} />
                                 <Route path="/admin/register" element={<AdminRegister />} />
