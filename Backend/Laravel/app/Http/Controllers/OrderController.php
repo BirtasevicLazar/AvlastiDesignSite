@@ -7,6 +7,9 @@ use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use App\Mail\OrderConfirmationMail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -84,6 +87,9 @@ class OrderController extends Controller
 
             DB::commit();
 
+            // Nakon uspešnog kreiranja narudžbine
+            Mail::to($request->email)->send(new OrderConfirmationMail($order));
+
             return response()->json([
                 'message' => 'Porudžbina je uspešno kreirana',
                 'order_id' => $order->id
@@ -91,6 +97,7 @@ class OrderController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error('Error creating order: ' . $e->getMessage());
             return response()->json([
                 'message' => 'Došlo je do greške prilikom kreiranja porudžbine',
                 'error' => $e->getMessage()

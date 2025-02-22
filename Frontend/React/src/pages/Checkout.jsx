@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ExclamationCircleIcon, ShoppingBagIcon, TruckIcon, ChevronDownIcon, CheckIcon, ShieldCheckIcon, ChevronLeftIcon, CheckCircleIcon, XCircleIcon, XMarkIcon } from '@heroicons/react/24/outline';
@@ -367,7 +367,7 @@ const OrderStatusModal = ({ isOpen, status, onClose }) => {
                                                 Porudžbina je uspešno kreirana
                                             </h3>
                                             <p className="text-sm text-gray-500 mb-6">
-                                                Hvala vam na poverenju! Vaša porudžbina je uspešno primljena i biće obrađena u najkraćem roku.
+                                                Hvala vam na poverenju! Vaša porudžbina je uspešno primljena i poslali smo vam email sa potvrdom porudžbine. Molimo vas da proverite vaš email (uključujući i spam folder).
                                             </p>
                                         </>
                                     ) : (
@@ -379,7 +379,7 @@ const OrderStatusModal = ({ isOpen, status, onClose }) => {
                                                 Greška pri kreiranju porudžbine
                                             </h3>
                                             <p className="text-sm text-gray-500 mb-6">
-                                                Došlo je do greške prilikom kreiranja porudžbine. Molimo vas da pokušate ponovo.
+                                                Došlo je do greške prilikom kreiranja porudžbine. Molimo vas da proverite unete podatke i pokušate ponovo.
                                             </p>
                                         </>
                                     )}
@@ -413,7 +413,7 @@ const Checkout = () => {
     phone: '',
     firstName: '',
     lastName: '',
-    country: 'RS', // Default je Srbija
+    country: 'RS',
     city: '',
     street: '',
     houseNumber: '',
@@ -427,6 +427,70 @@ const Checkout = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [orderStatus, setOrderStatus] = useState(null);
+
+  const handleModalClose = () => {
+    if (orderStatus === 'success') {
+      clearCart();
+      navigate('/products');
+    }
+    setShowModal(false);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrors({});
+
+    try {
+      const orderData = {
+        ...formData,
+        items: cart.map(item => ({
+          id: item.id,
+          size: item.size,
+          color: item.color,
+          quantity: item.quantity,
+          price: item.price
+        })),
+        total: finalTotal
+      };
+
+      const response = await axiosInstance.post('/api/orders', orderData);
+      
+      if (response.data) {
+        setOrderStatus('success');
+        setShowModal(true);
+      }
+    } catch (error) {
+      console.error('Error creating order:', error.response?.data || error);
+      setOrderStatus('error');
+      setShowModal(true);
+      setErrors({
+        submit: error.response?.data?.message || 'Došlo je do greške prilikom kreiranja porudžbine.'
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    // Očisti grešku za to polje ako postoji
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: undefined
+      }));
+    }
+  };
 
   const validateForm = () => {
     const newErrors = {};
@@ -486,69 +550,8 @@ const Checkout = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const validationErrors = validateForm();
-    
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
-
-    setIsSubmitting(true);
-    setErrors({});
-
-    try {
-      const orderData = {
-        ...formData,
-        items: cart.map(item => ({
-          id: item.id,
-          size: item.size,
-          color: item.color,
-          quantity: item.quantity,
-          price: item.price
-        })),
-        total: finalTotal
-      };
-
-      await axiosInstance.post('/api/orders', orderData);
-      setOrderStatus('success');
-      setShowModal(true);
-    } catch (error) {
-      console.error('Error creating order:', error);
-      setOrderStatus('error');
-      setShowModal(true);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    // Očisti grešku za to polje ako postoji
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: undefined
-      }));
-    }
-  };
-
-  const handleModalClose = () => {
-    setShowModal(false);
-    if (orderStatus === 'success') {
-        clearCart();
-        navigate('/');
-    }
-  };
-
-  if (cart.length === 0) {
-    navigate('/cart');
-    return null;
+  if (cart.length === 0 && !showModal) {
+    return <Navigate to="/products" replace />;
   }
 
   return (
