@@ -20,7 +20,6 @@ const tabs = [
     { id: 'orders', name: 'Porudžbine', icon: ShoppingBagIcon },
     { id: 'products', name: 'Proizvodi', icon: PhotoIcon },
     { id: 'popular', name: 'Popularni Proizvodi', icon: StarIcon },
-    // { id: 'hero', name: 'Hero Sekcija', icon: HomeIcon },
 ];
 
 const AdminDashboard = () => {
