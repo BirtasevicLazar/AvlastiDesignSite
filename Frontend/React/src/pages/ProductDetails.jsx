@@ -39,7 +39,7 @@ const colorNameMapping = {
 };
 
 // Dostupne veličine
-const availableSizes = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'];
+const availableSizes = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL'];
 
 const ProductDetails = () => {
     const { id } = useParams();
@@ -201,9 +201,9 @@ const ProductDetails = () => {
                                 <h1 className="text-3xl font-bold text-gray-900 text-center lg:text-left">
                                     {product.name}
                                 </h1>
-                                <div className="mt-4 flex justify-between">
+                                <div className="mt-4 flex justify-center lg:justify-between">
                                     <h2 className="sr-only">Product information</h2>
-                                    <p className="text-2xl tracking-tight text-gray-900">
+                                    <p className="text-2xl tracking-tight text-gray-900 text-center lg:text-left">
                                         {product.price} RSD
                                     </p>
                                 </div>
@@ -315,9 +315,9 @@ const ProductDetails = () => {
                             </button>
 
                             {/* Dodatne informacije o dostavi */}
-                            <div className="mt-6 flex items-center">
+                            <div className="mt-6 flex items-center justify-center">
                                 <TruckIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-                                <p className="ml-2 text-sm text-gray-500">
+                                <p className="ml-2 text-sm text-gray-500 text-center">
                                     Dostava kurirskom službom
                                 </p>
                             </div>
@@ -333,63 +333,55 @@ const ProductDetails = () => {
                     className="bg-white rounded-3xl p-8 border border-gray-100"
                 >
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        {/* Informacije o proizvodu */}
-                        <div>
-                            <h3 className="text-lg font-semibold text-gray-900 mb-6">Informacije o proizvodu</h3>
-                            <div className="grid grid-cols-2 gap-6">
-                                <div className="space-y-4">
-                                    <div>
-                                        <h4 className="text-sm font-medium text-gray-900">Materijal</h4>
-                                        <p className="text-gray-600">100% Pamuk</p>
-                                    </div>
-                                    <div>
-                                        <h4 className="text-sm font-medium text-gray-900">Održavanje</h4>
-                                        <p className="text-gray-600">Pranje na 30°C</p>
-                                    </div>
-                                    <div>
-                                        <h4 className="text-sm font-medium text-gray-900">Zemlja porekla</h4>
-                                        <p className="text-gray-600">Srbija</p>
-                                    </div>
-                                </div>
-                                <div className="space-y-4">
-                                    <div>
-                                        <h4 className="text-sm font-medium text-gray-900">Štampa</h4>
-                                        <p className="text-gray-600">Digitalna štampa visokog kvaliteta</p>
-                                    </div>
-                                    <div>
-                                        <h4 className="text-sm font-medium text-gray-900">Dostava</h4>
-                                        <p className="text-gray-600">2-4 radna dana</p>
-                                    </div>
-                                    <div>
-                                        <h4 className="text-sm font-medium text-gray-900">Garancija</h4>
-                                        <p className="text-gray-600">30 dana povrat novca</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
                         {/* Vodič za veličine */}
                         <div>
-                            <h3 className="text-lg font-semibold text-gray-900 mb-6">Vodič za veličine</h3>
+                            <h3 className="text-lg font-semibold text-gray-900 mb-6 text-center">Vodič za veličine</h3>
                             <div className="overflow-x-auto">
                                 <table className="min-w-full divide-y divide-gray-200">
                                     <thead>
                                         <tr className="bg-gray-50">
-                                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Veličina</th>
-                                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Grudi (cm)</th>
-                                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Dužina (cm)</th>
+                                            <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Veličina</th>
+                                            <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Grudi (cm)</th>
+                                            <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Dužina (cm)</th>
                                         </tr>
                                     </thead>
                                     <tbody className="bg-white divide-y divide-gray-200">
                                         {availableSizes.map((size, index) => (
                                             <tr key={size} className={index % 2 === 0 ? 'bg-gray-50' : ''}>
-                                                <td className="px-4 py-2 text-sm text-gray-900">{size}</td>
-                                                <td className="px-4 py-2 text-sm text-gray-600">{90 + index * 4}</td>
-                                                <td className="px-4 py-2 text-sm text-gray-600">{65 + index * 2}</td>
+                                                <td className="px-4 py-2 text-sm text-gray-900 text-center">{size}</td>
+                                                <td className="px-4 py-2 text-sm text-gray-600 text-center">{90 + index * 4}</td>
+                                                <td className="px-4 py-2 text-sm text-gray-600 text-center">{65 + index * 2}</td>
                                             </tr>
                                         ))}
                                     </tbody>
                                 </table>
+                            </div>
+                        </div>
+
+
+                           {/* Informacije o proizvodu */}
+                           <div>
+                            <h3 className="text-lg font-semibold text-gray-900 mb-6 text-center">Informacije o proizvodu</h3>
+                            <div className="space-y-4 text-center">
+                                <p className="text-gray-600">
+                                    <span className="font-medium text-gray-900">Materijal</span> - 100% Pamuk
+                                </p>
+                                <p className="text-gray-600">
+                                    <span className="font-medium text-gray-900">Održavanje</span> - Pranje na 30°C
+                                </p>
+                                <p className="text-gray-600">
+                                    <span className="font-medium text-gray-900">Zemlja porekla</span> - Srbija
+                                </p>
+                                <p className="text-gray-600">
+                                    <span className="font-medium text-gray-900">Štampa</span> - Digitalna štampa visokog kvaliteta
+                                </p>
+                                <p className="text-gray-600">
+                                    <span className="font-medium text-gray-900">Dostava</span> - 2-4 radna dana
+                                </p>
+                                <p className="text-gray-600">
+                                    <span className="font-medium text-gray-900">Garancija</span> - 30 dana povrat novca
+                                </p>
                             </div>
                         </div>
                     </div>
