@@ -9,7 +9,7 @@ import logo from '../../assets/images/logo.png'
 const navigation = [
   { name: 'Početna', href: '/' },
   { name: 'Proizvodi', href: '/products' },
-  { name: 'Kontakt', href: '/contact' },
+  { name: 'Personalizovana majica', href: '/personalized-t-shirt' },
 ]
 
 export default function Navbar() {

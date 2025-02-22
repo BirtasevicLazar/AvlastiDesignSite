@@ -94,7 +94,7 @@ const Cart = () => {
                 </div>
                 <div className="border-t border-gray-200 pt-4">
                   <div className="flex justify-between text-lg font-semibold text-gray-900">
-                    <span>Ukupno za plaćanje:</span>
+                    <span>Ukupna cena:</span>
                     <span>{finalTotal} RSD</span>
                   </div>
                   <p className="text-sm text-gray-500 mt-2 text-center">
