@@ -133,7 +133,7 @@ const PopularProductsManager = () => {
                         <select
                             value={selectedProduct}
                             onChange={(e) => setSelectedProduct(e.target.value)}
-                            className="flex-grow rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                            className="flex-grow rounded-lg border-gray-300 shadow-sm focus:border-[#C72C41] focus:ring-[#C72C41]"
                         >
                             <option value="">Izaberite proizvod</option>
                             {availableProducts.map((product) => (
@@ -146,11 +146,10 @@ const PopularProductsManager = () => {
                             type="button"
                             onClick={handleAddPopular}
                             disabled={!selectedProduct || loading}
-                            className={`inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-xl shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+                            className={`inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg text-white bg-[#C72C41] hover:bg-[#a42435] transition-colors ${
                                 loading || !selectedProduct ? 'opacity-50 cursor-not-allowed' : ''
                             }`}
                         >
-                            <PlusIcon className="w-5 h-5 mr-2" />
                             Dodaj
                         </button>
                     </div>
