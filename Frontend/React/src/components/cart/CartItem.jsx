@@ -27,76 +27,68 @@ const CartItem = ({ item }) => {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm p-4 md:p-6">
-      <div className="flex items-start space-x-4">
+    <div className="bg-white rounded-lg shadow-md p-4 mb-4 relative">
+      {/* Dugme za uklanjanje proizvoda */}
+      <button
+        onClick={() => removeFromCart(item)}
+        className="absolute top-2 right-2 text-gray-400 hover:text-gray-500 transition-colors"
+      >
+        <XMarkIcon className="h-5 w-5" />
+      </button>
+
+      <div className="flex flex-col items-center md:flex-row md:items-start">
         {/* Slika proizvoda */}
-        <div className="flex-shrink-0">
-          <img
-            src={item.image}
-            alt={item.name}
-            className="w-24 h-24 md:w-32 md:h-32 object-cover rounded-xl"
-          />
-        </div>
+        <img
+          src={item.image}
+          alt={item.name}
+          className="w-24 h-24 object-cover rounded-lg mb-4 md:mb-0 md:mr-4"
+        />
 
         {/* Informacije o proizvodu */}
-        <div className="flex-grow min-w-0">
-          <div className="flex justify-between">
-            <div>
-              <h3 className="text-lg font-medium text-gray-900 truncate">
-                {item.name}
-              </h3>
-              <div className="mt-1 space-y-1">
-                <p className="text-sm text-gray-500">
-                  Veličina: <span className="font-medium text-gray-900">{item.size}</span>
-                </p>
-                {item.color && (
-                  <p className="text-sm text-gray-500">
-                    Boja: <span className="font-medium text-gray-900">{colorNameMapping[item.color] || item.color}</span>
-                  </p>
-                )}
-              </div>
-            </div>
-            <button
-              onClick={() => removeFromCart(item)}
-              className="text-gray-400 hover:text-gray-500 transition-colors p-1"
-            >
-              <XMarkIcon className="h-5 w-5" />
-            </button>
-          </div>
+        <div className="flex-grow text-center md:text-left">
+          <h3 className="text-lg font-semibold text-gray-900 truncate">
+            {item.name}
+          </h3>
+          <p className="text-sm text-gray-500">
+            Veličina: <span className="font-medium text-gray-900">{item.size}</span>
+          </p>
+          {item.color && (
+            <p className="text-sm text-gray-500">
+              Boja: <span className="font-medium text-gray-900">{colorNameMapping[item.color] || item.color}</span>
+            </p>
+          )}
+        </div>
+      </div>
 
-          <div className="mt-4 flex items-center justify-between">
-            {/* Kontrole za količinu */}
-            <div className="flex items-center space-x-3">
-              <button
-                onClick={() => handleQuantityChange(-1)}
-                disabled={item.quantity <= 1}
-                className="w-8 h-8 rounded-lg flex items-center justify-center border border-gray-200 text-gray-600 hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <MinusIcon className="h-4 w-4" />
-              </button>
-              <span className="text-gray-900 font-medium min-w-[2rem] text-center">
-                {item.quantity}
-              </span>
-              <button
-                onClick={() => handleQuantityChange(1)}
-                disabled={item.quantity >= 10}
-                className="w-8 h-8 rounded-lg flex items-center justify-center border border-gray-200 text-gray-600 hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <PlusIcon className="h-4 w-4" />
-              </button>
-            </div>
+      {/* Kontrole za količinu i cenu */}
+      <div className="flex flex-col items-center md:flex-row md:justify-between mt-4">
+        <div className="flex items-center space-x-3 mb-4 md:mb-0">
+          <button
+            onClick={() => handleQuantityChange(-1)}
+            disabled={item.quantity <= 1}
+            className="w-8 h-8 rounded-lg flex items-center justify-center border border-gray-200 text-gray-600 hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <MinusIcon className="h-4 w-4" />
+          </button>
+          <span className="text-gray-900 font-medium min-w-[2rem] text-center">
+            {item.quantity}
+          </span>
+          <button
+            onClick={() => handleQuantityChange(1)}
+            disabled={item.quantity >= 10}
+            className="w-8 h-8 rounded-lg flex items-center justify-center border border-gray-200 text-gray-600 hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <PlusIcon className="h-4 w-4" />
+          </button>
+        </div>
 
-            {/* Cena */}
-            <div className="text-right">
-              <p className="text-sm text-gray-500">Cena po komadu</p>
-              <div className="flex flex-col">
-                <p className="text-lg font-medium text-gray-900">{item.price} RSD</p>
-                <p className="text-sm text-gray-500">
-                  Ukupno: <span className="font-medium text-gray-900">{(item.price * item.quantity).toFixed(2)} RSD</span>
-                </p>
-              </div>
-            </div>
-          </div>
+        <div className="flex flex-col space-y-2 items-center md:items-end">
+          <p className="text-sm text-gray-500">
+            Cena po komadu: <span className="font-medium text-gray-900">{item.price} RSD</span>
+          </p>
+          <p className="text-sm text-gray-500">
+            Ukupno: <span className="font-medium text-gray-900">{(item.price * item.quantity).toFixed(2)} RSD</span>
+          </p>
         </div>
       </div>
     </div>
