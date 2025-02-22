@@ -11,11 +11,11 @@ import Majica2 from '../../assets/images/Majica2.jpg';
 // Custom CSS za Swiper
 const swiperCustomStyles = `
     .swiper-pagination-bullet {
-        background: #14b8a6;
+        background: #C72C41;
     }
 
     .swiper-pagination-bullet-active {
-        background: #14b8a6;
+        background: #C72C41;
     }
 `;
 
@@ -39,7 +39,7 @@ const CustomShirt = () => {
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3 text-center">
             Personalizovana Majica
           </h2>
-          <div className="w-20 h-1 bg-teal-500 rounded-full"></div>
+          <div className="w-20 h-1 bg-[#C72C41] rounded-full"></div>
         </motion.div>
 
         {/* Mobile: Stack layout */}
@@ -93,7 +93,7 @@ const CustomShirt = () => {
                 <svg className="w-5 h-5 text-gray-400 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <p>Sve slike moraju biti jasne i visokog kvaliteta za najbolje rezultate. Prihvatamo JPG i PNG formate.</p>
+                <p>Kreirajte jedinstvenu majicu koja će ispričati vašu priču. Svaki dizajn je poseban, baš kao i vaše uspomene.</p>
               </div>
             </div>
           </div>

@@ -12,7 +12,7 @@ import 'swiper/css/navigation';
 const swiperCustomStyles = `
     .swiper-button-next,
     .swiper-button-prev {
-        color: #14b8a6;
+        color: #C72C41;
         background: white;
         padding: 24px;
         border-radius: 50%;
@@ -27,11 +27,11 @@ const swiperCustomStyles = `
     }
 
     .swiper-pagination-bullet {
-        background: #14b8a6;
+        background: #C72C41;
     }
 
     .swiper-pagination-bullet-active {
-        background: #14b8a6;
+        background: #C72C41;
     }
 `;
 
@@ -106,7 +106,7 @@ const PopularProducts = () => {
                     <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
                         Popularni proizvodi
                     </h2>
-                    <div className="w-20 h-1 bg-teal-500 rounded-full"></div>
+                    <div className="w-20 h-1 bg-[#C72C41] rounded-full"></div>
                 </motion.div>
 
                 <div className="mb-20">

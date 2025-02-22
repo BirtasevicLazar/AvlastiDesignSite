@@ -8,7 +8,6 @@ import logo from '../../assets/images/logo.png'
 const navigation = [
   { name: 'Početna', href: '/' },
   { name: 'Proizvodi', href: '/products' },
-  { name: 'O nama', href: '/about' },
   { name: 'Kontakt', href: '/contact' },
 ]
 
@@ -171,6 +170,7 @@ export default function Navbar() {
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.2 }}
+                      className="text-center"
                     >
                       <Link
                         to={item.href}
@@ -190,11 +190,11 @@ export default function Navbar() {
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.2, delay: 0.1 }}
-                  className="mt-8"
+                  className="mt-8 flex justify-center"
                 >
                   <Link
                     to="/cart"
-                    className="w-full flex items-center justify-center space-x-2 bg-gray-900 text-white px-4 py-2.5 rounded-lg hover:bg-gray-800 transition-colors"
+                    className="flex items-center justify-center space-x-2 bg-gray-900 text-white px-8 py-2.5 rounded-lg hover:bg-gray-800 transition-colors"
                   >
                     <ShoppingBagIcon className="h-5 w-5" />
                     <span className="text-sm">Korpa</span>

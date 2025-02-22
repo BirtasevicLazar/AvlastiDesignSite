@@ -171,7 +171,7 @@ const Products = () => {
                             placeholder="Pretraži proizvode..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full h-12 pl-12 pr-4 rounded-full border-0 bg-white shadow-sm ring-1 ring-inset ring-gray-200 focus:ring-2 focus:ring-teal-500 text-sm"
+                            className="w-full h-12 pl-12 pr-4 rounded-full border-0 bg-white shadow-sm ring-1 ring-inset ring-gray-200 focus:ring-2 focus:ring-[#C72C41] text-sm"
                         />
                     </div>
 
@@ -185,7 +185,7 @@ const Products = () => {
                                         onClick={() => setSelectedGender(gender)}
                                         className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 min-w-[80px] ${
                                             selectedGender === gender
-                                                ? 'bg-teal-500 text-white shadow-sm'
+                                                ? 'bg-[#C72C41] text-white shadow-sm'
                                                 : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
                                         }`}
                                     >
@@ -201,7 +201,7 @@ const Products = () => {
                         <select
                             value={sortBy}
                             onChange={(e) => setSortBy(e.target.value)}
-                            className="w-full sm:w-auto h-11 px-4 rounded-full bg-white shadow-sm ring-1 ring-inset ring-gray-200 text-sm text-gray-500 focus:ring-2 focus:ring-teal-500"
+                            className="w-full sm:w-auto h-11 px-4 rounded-full bg-white shadow-sm ring-1 ring-inset ring-gray-200 text-sm text-gray-500 focus:ring-2 focus:ring-[#C72C41]"
                         >
                             <option value="default">Sortiraj po</option>
                             <option value="price-asc">Najniža cena</option>
