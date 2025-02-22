@@ -12,53 +12,56 @@ import Cart from './pages/Cart'
 import Checkout from './pages/Checkout'
 import ScrollToTop from './components/utils/ScrollToTop'
 import { CartProvider } from './context/CartContext'
+import { NavbarProvider } from './context/NavbarContext'
 
 // Kompleksna skrivena ruta koju je teško pogoditi
 const ADMIN_SECRET_PATH = 'control-panel-secure-x9j2m5'
 
 function App() {
     return (
-        <CartProvider>
-            <Router>
-                <ScrollToTop />
-                <div className="min-h-screen flex flex-col">
-                    {/* Navbar će biti sakriven na admin stranicama */}
-                    <Routes>
-                        <Route path="/admin/*" element={null} />
-                        <Route path="*" element={<Navbar />} />
-                    </Routes>
-
-                    <main className="flex-grow">
+        <NavbarProvider>
+            <CartProvider>
+                <Router>
+                    <ScrollToTop />
+                    <div className="min-h-screen flex flex-col">
+                        {/* Navbar će biti sakriven na admin stranicama */}
                         <Routes>
-                            <Route path="/" element={<Home />} />
-                            <Route path="/products" element={<Products />} />
-                            <Route path="/products/:id" element={<ProductDetails />} />
-                            <Route path="/cart" element={<Cart />} />
-                            <Route path="/checkout" element={<Checkout />} />
-                            
-                            {/* Admin rute */}
-                            <Route path="/admin/login" element={<AdminLogin />} />
-                            <Route path="/admin/register" element={<AdminRegister />} />
-                            <Route
-                                path="/admin/dashboard"
-                                element={
-                                    <ProtectedRoute>
-                                        <AdminDashboard />
-                                    </ProtectedRoute>
-                                }
-                            />
-                            <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
+                            <Route path="/admin/*" element={null} />
+                            <Route path="*" element={<Navbar />} />
                         </Routes>
-                    </main>
 
-                    {/* Footer će biti sakriven na admin stranicama */}
-                    <Routes>
-                        <Route path="/admin/*" element={null} />
-                        <Route path="*" element={<Footer />} />
-                    </Routes>
-                </div>
-            </Router>
-        </CartProvider>
+                        <main className="flex-grow">
+                            <Routes>
+                                <Route path="/" element={<Home />} />
+                                <Route path="/products" element={<Products />} />
+                                <Route path="/products/:id" element={<ProductDetails />} />
+                                <Route path="/cart" element={<Cart />} />
+                                <Route path="/checkout" element={<Checkout />} />
+                                
+                                {/* Admin rute */}
+                                <Route path="/admin/login" element={<AdminLogin />} />
+                                <Route path="/admin/register" element={<AdminRegister />} />
+                                <Route
+                                    path="/admin/dashboard"
+                                    element={
+                                        <ProtectedRoute>
+                                            <AdminDashboard />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
+                            </Routes>
+                        </main>
+
+                        {/* Footer će biti sakriven na admin stranicama */}
+                        <Routes>
+                            <Route path="/admin/*" element={null} />
+                            <Route path="*" element={<Footer />} />
+                        </Routes>
+                    </div>
+                </Router>
+            </CartProvider>
+        </NavbarProvider>
     )
 }
 

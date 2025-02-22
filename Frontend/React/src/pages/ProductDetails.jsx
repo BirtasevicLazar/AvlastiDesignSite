@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeftIcon, ShoppingBagIcon, ExclamationCircleIcon, TruckIcon } from '@heroicons/react/24/outline';
 import { useCart } from '../context/CartContext';
 import axiosInstance from '../utils/axios';
+import { useNavbar } from '../context/NavbarContext';
 
 // Mapiranje naziva boja u HEX vrednosti
 const colorMapping = {
@@ -42,6 +43,7 @@ const availableSizes = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'];
 
 const ProductDetails = () => {
     const { id } = useParams();
+    const { openNavbar } = useNavbar();
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -50,7 +52,7 @@ const ProductDetails = () => {
     const [quantity, setQuantity] = useState(1);
     const [addedToCart, setAddedToCart] = useState(false);
     const [validationError, setValidationError] = useState(null);
-    const { addToCart } = useCart();
+    const { addToCart, cart } = useCart();
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -105,7 +107,7 @@ const ProductDetails = () => {
             size: selectedSize,
             color: selectedColor,
             quantity: quantity,
-            colors: product.colors // Dodajemo informaciju o dostupnim bojama
+            colors: product.colors
         };
 
         const success = addToCart(cartItem);
@@ -114,7 +116,11 @@ const ProductDetails = () => {
             setAddedToCart(true);
             setValidationError(null);
 
-            // Reset the "Added to cart" message after 2 seconds
+            // Otvoriti meni samo na malim ekranima i ako je korpa prazna
+            if (window.innerWidth < 768 && cart.length === 0) {
+                openNavbar();
+            }
+
             setTimeout(() => {
                 setAddedToCart(false);
             }, 2000);

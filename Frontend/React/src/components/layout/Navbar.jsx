@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { ShoppingBagIcon } from '@heroicons/react/24/outline'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useCart } from '../../context/CartContext'
+import { useNavbar } from '../../context/NavbarContext'
 import logo from '../../assets/images/logo.png'
 
 const navigation = [
@@ -13,10 +14,10 @@ const navigation = [
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
-  const [isOpen, setIsOpen] = useState(false)
   const location = useLocation()
   const isHomePage = location.pathname === '/'
   const { cart } = useCart()
+  const { isOpen, setIsOpen, cartAnimation } = useNavbar()
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 0)
@@ -86,9 +87,9 @@ export default function Navbar() {
                     : 'text-white/80 hover:text-white'
                 }`}
               >
-                <ShoppingBagIcon className="h-5 w-5" />
+                <ShoppingBagIcon className={`h-5 w-5 transition-transform duration-300 ${cartAnimation ? 'animate-bounce' : ''}`} />
                 {cart.length > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-medium px-1.5 py-0.5 rounded-full">
+                  <span className="absolute -top-2 -right-2 bg-[#C72C41] text-white text-xs font-medium px-1.5 py-0.5 rounded-full">
                     {cart.length}
                   </span>
                 )}
@@ -196,7 +197,7 @@ export default function Navbar() {
                     to="/cart"
                     className="flex items-center justify-center space-x-2 bg-gray-900 text-white px-8 py-2.5 rounded-lg hover:bg-gray-800 transition-colors"
                   >
-                    <ShoppingBagIcon className="h-5 w-5" />
+                    <ShoppingBagIcon className={`h-5 w-5 ${cartAnimation ? 'animate-bounce' : ''}`} />
                     <span className="text-sm">Korpa</span>
                     {cart.length > 0 && (
                       <span className="bg-white text-gray-900 text-xs font-medium px-1.5 py-0.5 rounded-full">
