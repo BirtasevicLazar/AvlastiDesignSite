@@ -329,7 +329,7 @@ const CountrySelect = ({ value, onChange, error }) => {
   );
 };
 
-const OrderStatusModal = ({ isOpen, status, onClose }) => {
+const OrderStatusModal = ({ isOpen, status, onClose, isProcessing }) => {
     return (
         <AnimatePresence>
             {isOpen && (
@@ -358,7 +358,22 @@ const OrderStatusModal = ({ isOpen, status, onClose }) => {
                                     </button>
                                 </div>
                                 <div className="text-center">
-                                    {status === 'success' ? (
+                                    {isProcessing ? (
+                                        <>
+                                            <div className="mx-auto flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 mb-4">
+                                                <svg className="animate-spin h-6 w-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                </svg>
+                                            </div>
+                                            <h3 className="text-lg font-medium text-gray-900 mb-2">
+                                                Procesiranje porudžbine
+                                            </h3>
+                                            <p className="text-sm text-gray-500 mb-6">
+                                                Molimo vas da sačekate dok procesiramo vašu porudžbinu...
+                                            </p>
+                                        </>
+                                    ) : status === 'success' ? (
                                         <>
                                             <div className="mx-auto flex items-center justify-center w-12 h-12 rounded-full bg-green-100 mb-4">
                                                 <CheckCircleIcon className="w-6 h-6 text-green-600" />
@@ -383,16 +398,18 @@ const OrderStatusModal = ({ isOpen, status, onClose }) => {
                                             </p>
                                         </>
                                     )}
-                                    <button
-                                        onClick={onClose}
-                                        className={`w-full py-3 px-4 rounded-xl text-white font-medium ${
-                                            status === 'success' 
-                                                ? 'bg-green-600 hover:bg-green-700' 
-                                                : 'bg-red-600 hover:bg-red-700'
-                                        } transition-colors`}
-                                    >
-                                        {status === 'success' ? 'U redu' : 'Pokušaj ponovo'}
-                                    </button>
+                                    {!isProcessing && (
+                                        <button
+                                            onClick={onClose}
+                                            className={`w-full py-3 px-4 rounded-xl text-white font-medium ${
+                                                status === 'success' 
+                                                    ? 'bg-green-600 hover:bg-green-700' 
+                                                    : 'bg-red-600 hover:bg-red-700'
+                                            } transition-colors`}
+                                        >
+                                            {status === 'success' ? 'U redu' : 'Pokušaj ponovo'}
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -427,6 +444,7 @@ const Checkout = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [orderStatus, setOrderStatus] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleModalClose = () => {
     if (orderStatus === 'success') {
@@ -445,6 +463,8 @@ const Checkout = () => {
 
     setIsSubmitting(true);
     setErrors({});
+    setIsProcessing(true);
+    setShowModal(true);
 
     try {
       const orderData = {
@@ -463,15 +483,15 @@ const Checkout = () => {
       
       if (response.data) {
         setOrderStatus('success');
-        setShowModal(true);
+        setIsProcessing(false);
       }
     } catch (error) {
       console.error('Error creating order:', error.response?.data || error);
       setOrderStatus('error');
-      setShowModal(true);
       setErrors({
         submit: error.response?.data?.message || 'Došlo je do greške prilikom kreiranja porudžbine.'
       });
+      setIsProcessing(false);
     } finally {
       setIsSubmitting(false);
     }
@@ -858,6 +878,7 @@ const Checkout = () => {
         isOpen={showModal} 
         status={orderStatus} 
         onClose={handleModalClose}
+        isProcessing={isProcessing}
       />
     </>
   );
