@@ -14,14 +14,13 @@ import {
 } from '@heroicons/react/24/outline';
 import ProductManager from './ProductManager';
 import PopularProductsManager from './PopularProductsManager';
-import HeroManager from './HeroManager';
 import OrderManager from './OrderManager';
 
 const tabs = [
     { id: 'orders', name: 'Porudžbine', icon: ShoppingBagIcon },
     { id: 'products', name: 'Proizvodi', icon: PhotoIcon },
     { id: 'popular', name: 'Popularni Proizvodi', icon: StarIcon },
-    { id: 'hero', name: 'Hero Sekcija', icon: HomeIcon },
+    // { id: 'hero', name: 'Hero Sekcija', icon: HomeIcon },
 ];
 
 const AdminDashboard = () => {
@@ -157,8 +156,6 @@ const AdminDashboard = () => {
                     >
                         {activeTab === 'orders' ? (
                             <OrderManager />
-                        ) : activeTab === 'hero' ? (
-                            <HeroManager />
                         ) : activeTab === 'products' ? (
                             <ProductManager />
                         ) : (
