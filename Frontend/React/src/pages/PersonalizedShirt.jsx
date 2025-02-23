@@ -5,13 +5,9 @@ import tshirtVideo from '../assets/images/tshirt-video.mp4';
 
 const PersonalizedShirt = () => {
   return (
-    <div className="relative h-screen w-full overflow-hidden">
-      <video className="absolute inset-0 z-0 h-full w-full object-cover" autoPlay muted loop playsInline>
-          <source src={tshirtVideo} type="video/mp4" />
-          Vaš pregledač ne podržava video tag.
-      </video>
-      <div className="relative z-20 h-full container mx-auto px-4">
-        <div className="bg-gray-50 py-8 sm:py-12 md:py-16 mt-20">
+    <div className="min-h-screen w-full bg-white">
+      <div className="relative h-full container mx-auto px-4">
+        <div className="bg-white py-8 sm:py-12 md:py-16 mt-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
