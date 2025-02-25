@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import tshirtVideo from '../assets/images/tshirt-video.mp4';
+import { FaInstagram } from 'react-icons/fa';
 
 
 const PersonalizedShirt = () => {
@@ -51,17 +52,27 @@ const PersonalizedShirt = () => {
                     href="https://instagram.com/avlasti.design"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center w-full sm:w-auto px-6 py-4 sm:py-3 border border-transparent text-base font-medium rounded-lg text-white bg-black hover:bg-gray-800 transition-all duration-200 shadow-sm hover:shadow-lg"
+                    className="group inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3.5 border-2 border-black text-base font-medium rounded-xl text-white bg-black hover:bg-white hover:text-black transition-all duration-300 shadow-sm hover:shadow-xl"
                   >
-                    Kontaktirajte Nas na Instagramu
+                    <FaInstagram className="text-2xl group-hover:scale-110 transition-transform duration-300" />
+                    <span>Kontaktirajte Nas</span>
                   </a>
                 </div>
               </div>
               <div className="order-1 lg:order-1 mb-8 lg:mb-0 w-full">
-                <video className="w-full h-auto rounded-2xl shadow-2xl" autoPlay muted loop>
+                <div className="relative w-full overflow-hidden" style={{ aspectRatio: '1/1' }}>
+                  <motion.video 
+                    className="w-full h-full rounded-2xl shadow-2xl object-cover"
+                    autoPlay 
+                    muted 
+                    loop 
+                    playsInline
+                    style={{ pointerEvents: 'none' }}
+                  >
                     <source src={tshirtVideo} type="video/mp4" />
                     Vaš pregledač ne podržava video tag.
-                </video>
+                  </motion.video>
+                </div>
               </div>
             </div>
 
