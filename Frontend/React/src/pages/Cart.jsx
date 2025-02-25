@@ -90,12 +90,12 @@ const Cart = () => {
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <span>Dostava:</span>
-                  <span>Plaćanje pouzećem</span>
+                  <span>580.00 RSD</span>
                 </div>
                 <div className="border-t border-gray-200 pt-4">
                   <div className="flex justify-between text-lg font-semibold text-gray-900">
                     <span>Ukupna cena:</span>
-                    <span>{finalTotal} RSD</span>
+                    <span>{(total + 580).toFixed(2)} RSD</span>
                   </div>
                   <p className="text-sm text-gray-500 mt-2 text-center">
                     Plaćanje pouzećem prilikom isporuke

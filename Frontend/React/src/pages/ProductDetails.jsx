@@ -39,7 +39,7 @@ const colorNameMapping = {
 };
 
 // Dostupne veličine
-const availableSizes = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL'];
+const availableSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
 
 const ProductDetails = () => {
     const { id } = useParams();
@@ -342,18 +342,18 @@ const ProductDetails = () => {
                                     <thead>
                                         <tr className="bg-gray-50">
                                             <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Veličina</th>
-                                            <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Grudi (cm)</th>
+                                            <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Širina (cm)</th>
                                             <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Dužina (cm)</th>
                                         </tr>
                                     </thead>
                                     <tbody className="bg-white divide-y divide-gray-200">
-                                        {availableSizes.map((size, index) => (
-                                            <tr key={size} className={index % 2 === 0 ? 'bg-gray-50' : ''}>
-                                                <td className="px-4 py-2 text-sm text-gray-900 text-center">{size}</td>
-                                                <td className="px-4 py-2 text-sm text-gray-600 text-center">{90 + index * 4}</td>
-                                                <td className="px-4 py-2 text-sm text-gray-600 text-center">{65 + index * 2}</td>
-                                            </tr>
-                                        ))}
+                                        <tr><td className="px-4 py-2 text-sm text-gray-900 text-center">XS</td><td className="px-4 py-2 text-sm text-gray-600 text-center">50</td><td className="px-4 py-2 text-sm text-gray-600 text-center">67</td></tr>
+                                        <tr className="bg-gray-50"><td className="px-4 py-2 text-sm text-gray-900 text-center">S</td><td className="px-4 py-2 text-sm text-gray-600 text-center">52</td><td className="px-4 py-2 text-sm text-gray-600 text-center">69</td></tr>
+                                        <tr><td className="px-4 py-2 text-sm text-gray-900 text-center">M</td><td className="px-4 py-2 text-sm text-gray-600 text-center">54</td><td className="px-4 py-2 text-sm text-gray-600 text-center">72</td></tr>
+                                        <tr className="bg-gray-50"><td className="px-4 py-2 text-sm text-gray-900 text-center">L</td><td className="px-4 py-2 text-sm text-gray-600 text-center">57</td><td className="px-4 py-2 text-sm text-gray-600 text-center">74</td></tr>
+                                        <tr><td className="px-4 py-2 text-sm text-gray-900 text-center">XL</td><td className="px-4 py-2 text-sm text-gray-600 text-center">60</td><td className="px-4 py-2 text-sm text-gray-600 text-center">76</td></tr>
+                                        <tr className="bg-gray-50"><td className="px-4 py-2 text-sm text-gray-900 text-center">XXL</td><td className="px-4 py-2 text-sm text-gray-600 text-center">62</td><td className="px-4 py-2 text-sm text-gray-600 text-center">78</td></tr>
+                                        <tr><td className="px-4 py-2 text-sm text-gray-900 text-center">3XL</td><td className="px-4 py-2 text-sm text-gray-600 text-center">64</td><td className="px-4 py-2 text-sm text-gray-600 text-center">80</td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -368,7 +368,7 @@ const ProductDetails = () => {
                                     <span className="font-medium text-gray-900">Materijal</span> - 100% Pamuk
                                 </p>
                                 <p className="text-gray-600">
-                                    <span className="font-medium text-gray-900">Održavanje</span> - Pranje na 30°C
+                                    <span className="font-medium text-gray-900">Održavanje</span> - Pranje do 40°C
                                 </p>
                                 <p className="text-gray-600">
                                     <span className="font-medium text-gray-900">Zemlja porekla</span> - Srbija
@@ -377,10 +377,7 @@ const ProductDetails = () => {
                                     <span className="font-medium text-gray-900">Štampa</span> - Digitalna štampa visokog kvaliteta
                                 </p>
                                 <p className="text-gray-600">
-                                    <span className="font-medium text-gray-900">Dostava</span> - 2-4 radna dana
-                                </p>
-                                <p className="text-gray-600">
-                                    <span className="font-medium text-gray-900">Garancija</span> - 30 dana povrat novca
+                                    <span className="font-medium text-gray-900">Dostava</span> - 5-7 radnih dana
                                 </p>
                             </div>
                         </div>

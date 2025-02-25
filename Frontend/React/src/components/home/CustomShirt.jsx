@@ -4,9 +4,12 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import girlfriendShirt from '../../assets/images/girlfriend-shirt.jpg';
-import Majica from '../../assets/images/Majica.jpg';
-import Majica2 from '../../assets/images/Majica2.jpg';
+import Majica1 from '../../assets/images/1.jpg';
+import Majica2 from '../../assets/images/2.jpg';
+import Majica3 from '../../assets/images/3.jpg';
+import Majica4 from '../../assets/images/4.jpg';
+import Majica5 from '../../assets/images/5.jpg';
+
 
 // Custom CSS za Swiper
 const swiperCustomStyles = `
@@ -21,9 +24,11 @@ const swiperCustomStyles = `
 
 const CustomShirt = () => {
   const shirts = [
-    { id: 1, image: girlfriendShirt, alt: "Custom Girlfriend Shirt Template 1" },
-    { id: 2, image: Majica, alt: "Custom Girlfriend Shirt Template 2" },
-    { id: 3, image: Majica2, alt: "Custom Girlfriend Shirt Template 3" }, 
+    { id: 1, image: Majica1, alt: "Custom Girlfriend Shirt Template 1" },
+    { id: 2, image: Majica2, alt: "Custom Girlfriend Shirt Template 2" },
+    { id: 3, image: Majica3, alt: "Custom Girlfriend Shirt Template 3" }, 
+    { id: 4, image: Majica4, alt: "Custom Girlfriend Shirt Template 4" },
+    { id: 5, image: Majica5, alt: "Custom Girlfriend Shirt Template 5" }, 
   ];
 
   return (
@@ -60,9 +65,9 @@ const CustomShirt = () => {
                 Kako do svoje majice:
               </p>
               <ol className="list-decimal list-inside space-y-2 text-gray-500">
-                <li>Pošaljite nam Vaše omiljene slike na Instagram</li>
-                <li>Mi ćemo ih uklopiti u ovaj moderni dizajn</li>
-                <li>Dobićete preview pre štampe</li>
+                <li>Kontaktirajte nas na Instagramu</li>
+                <li>Pošaljite nam Vaše slike na email</li>
+                <li>Dobićete preview dizajna pre štampe</li>
               </ol>
             </div>
             
@@ -93,7 +98,9 @@ const CustomShirt = () => {
                 <svg className="w-5 h-5 text-gray-400 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <p>Kreirajte jedinstvenu majicu koja će ispričati vašu priču. Svaki dizajn je poseban, baš kao i vaše uspomene.</p>
+                <p>
+                  Napomena: Sve majice se rade po porudžbini i vreme izrade i isporuke je 5-7 radnih dana. 
+                </p>
               </div>
             </div>
           </div>

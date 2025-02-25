@@ -148,7 +148,7 @@ export default function Hero() {
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-[#C72C41]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
                 <div className="relative">
-                  <div className="text-2xl lg:text-3xl font-bold text-white mb-1">100+</div>
+                  <div className="text-2xl lg:text-3xl font-bold text-white mb-1">500+</div>
                   <div className="text-white/70 text-sm">Jedinstvenih Dizajna</div>
                 </div>
               </motion.div>

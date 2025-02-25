@@ -420,10 +420,78 @@ const OrderStatusModal = ({ isOpen, status, onClose, isProcessing }) => {
     );
 };
 
+const InternationalOrderModal = ({ isOpen, onClose }) => {
+    return (
+        <AnimatePresence>
+            {isOpen && (
+                <>
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50"
+                        onClick={onClose}
+                    />
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                        className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md z-50 p-4"
+                    >
+                        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+                            <div className="relative p-6">
+                                <button
+                                    onClick={onClose}
+                                    className="absolute right-4 top-4 p-1 text-gray-400 hover:text-gray-500 transition-colors"
+                                >
+                                    <XMarkIcon className="w-5 h-5" />
+                                </button>
+                                
+                                <div className="text-center">
+                                    <div className="mx-auto flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 mb-6">
+                                        <TruckIcon className="w-8 h-8 text-blue-600" />
+                                    </div>
+                                    
+                                    <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                                        Međunarodna dostava
+                                    </h3>
+                                    
+                                    <p className="text-gray-600 mb-8">
+                                        Za porudžbine van Srbije, molimo vas da nas kontaktirate putem Instagram-a kako bismo vam dali detaljne informacije o dostavi i načinu plaćanja.
+                                    </p>
+                                    
+                                    <div className="space-y-4">
+                                        <a
+                                            href="https://www.instagram.com/avlasti.design"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center justify-center w-full px-6 py-3 text-base font-medium text-white bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all duration-200"
+                                        >
+                                            Posetite naš Instagram
+                                        </a>
+                                        
+                                        <button
+                                            onClick={onClose}
+                                            className="inline-flex items-center justify-center w-full px-6 py-3 text-base font-medium text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-all duration-200"
+                                        >
+                                            Nazad na porudžbinu
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </motion.div>
+                </>
+            )}
+        </AnimatePresence>
+    );
+};
+
 const Checkout = () => {
   const navigate = useNavigate();
   const { cart, total, clearCart } = useCart();
   const finalTotal = Number(total).toFixed(2);
+  const [showInternationalModal, setShowInternationalModal] = useState(false);
 
   const [formData, setFormData] = useState({
     email: '',
@@ -476,7 +544,7 @@ const Checkout = () => {
           quantity: item.quantity,
           price: item.price
         })),
-        total: finalTotal
+        total: total + 580 // Dodajemo cenu dostave direktno u total
       };
 
       const response = await axiosInstance.post('/api/orders', orderData);
@@ -510,6 +578,13 @@ const Checkout = () => {
         [name]: undefined
       }));
     }
+  };
+
+  const handleCountryChange = (code) => {
+    if (code !== 'RS') {
+      setShowInternationalModal(true);
+    }
+    handleChange({ target: { name: 'country', value: code } });
   };
 
   const validateForm = () => {
@@ -681,7 +756,7 @@ const Checkout = () => {
                       </label>
                       <CountrySelect
                         value={formData.country}
-                        onChange={(code) => handleChange({ target: { name: 'country', value: code } })}
+                        onChange={handleCountryChange}
                         error={errors.country}
                       />
                       {errors.country && (
@@ -832,24 +907,24 @@ const Checkout = () => {
                 </h2>
                 
                 <div className="space-y-4 mb-6">
-                  <div className="flex justify-between text-gray-600">
-                    <span>Cena proizvoda:</span>
-                    <span>{total.toFixed(2)} RSD</span>
-                  </div>
-                  <div className="flex justify-between text-gray-600">
-                    <span>Dostava:</span>
-                    <span>Plaćanje pouzećem</span>
-                  </div>
-                  <div className="border-t border-gray-200 pt-4">
-                    <div className="flex justify-between text-lg font-semibold text-gray-900">
-                      <span>Ukupna cena:</span>
-                      <span>{finalTotal} RSD</span>
-                    </div>
-                    <p className="text-sm text-gray-500 mt-2 text-center">
-                      Plaćanje pouzećem prilikom isporuke
-                    </p>
-                  </div>
+                <div className="flex justify-between text-gray-600">
+                  <span>Cena proizvoda:</span>
+                  <span>{total.toFixed(2)} RSD</span>
                 </div>
+                <div className="flex justify-between text-gray-600">
+                  <span>Dostava:</span>
+                  <span>580.00 RSD</span>
+                </div>
+                <div className="border-t border-gray-200 pt-4">
+                  <div className="flex justify-between text-lg font-semibold text-gray-900">
+                    <span>Ukupna cena:</span>
+                    <span>{(total + 580).toFixed(2)} RSD</span>
+                  </div>
+                  <p className="text-sm text-gray-500 mt-2 text-center">
+                    Plaćanje pouzećem prilikom isporuke
+                  </p>
+                </div>
+              </div>
 
                 <button
                   type="submit"
@@ -879,6 +954,13 @@ const Checkout = () => {
         status={orderStatus} 
         onClose={handleModalClose}
         isProcessing={isProcessing}
+      />
+      <InternationalOrderModal
+        isOpen={showInternationalModal}
+        onClose={() => {
+          setShowInternationalModal(false);
+          setFormData(prev => ({ ...prev, country: 'RS' }));
+        }}
       />
     </>
   );
