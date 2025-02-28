@@ -294,6 +294,10 @@ const OrderManager = () => {
                                                                                     Veličina: {item.size}
                                                                                     {item.color && `, Boja: ${item.color}`}
                                                                                 </p>
+                                                                                <p className="text-sm text-gray-500">
+                                                                                    {item.product.gender === 'male' ? 'Muška majica' :
+                                                                                     item.product.gender === 'female' ? 'Ženska majica' : 'Unisex majica'}
+                                                                                </p>
                                                                             </div>
                                                                         </div>
                                                                         <div className="flex justify-between items-center sm:ml-auto gap-4">

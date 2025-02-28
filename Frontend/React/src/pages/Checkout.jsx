@@ -907,24 +907,51 @@ const Checkout = () => {
                 </h2>
                 
                 <div className="space-y-4 mb-6">
-                <div className="flex justify-between text-gray-600">
-                  <span>Cena proizvoda:</span>
-                  <span>{total.toFixed(2)} RSD</span>
-                </div>
-                <div className="flex justify-between text-gray-600">
-                  <span>Dostava:</span>
-                  <span>580.00 RSD</span>
-                </div>
-                <div className="border-t border-gray-200 pt-4">
-                  <div className="flex justify-between text-lg font-semibold text-gray-900">
-                    <span>Ukupna cena:</span>
-                    <span>{(total + 580).toFixed(2)} RSD</span>
+                  {/* Lista proizvoda */}
+                  <div className="space-y-4">
+                    {cart.map((item) => (
+                      <div key={`${item.id}-${item.size}-${item.color || 'no-color'}`} className="flex justify-between items-center text-gray-600 text-sm">
+                        <div className="flex items-center space-x-2">
+                          <img src={item.image} alt={item.name} className="w-12 h-12 object-cover rounded-lg" />
+                          <div>
+                            <p className="font-medium text-gray-900">{item.name}</p>
+                            <p className="text-gray-500">
+                              {item.gender === 'male' ? 'Muška' : 
+                               item.gender === 'female' ? 'Ženska' : 'Unisex'} majica
+                            </p>
+                            <p className="text-gray-500">
+                              Veličina: {item.size}
+                              {item.color && ` | Boja: ${item.color}`}
+                            </p>
+                            <p className="text-gray-500">Količina: {item.quantity}</p>
+                          </div>
+                        </div>
+                        <span className="font-medium text-gray-900">{(item.price * item.quantity).toFixed(2)} RSD</span>
+                      </div>
+                    ))}
                   </div>
-                  <p className="text-sm text-gray-500 mt-2 text-center">
-                    Plaćanje pouzećem prilikom isporuke
-                  </p>
+
+                  {/* Ukupno */}
+                  <div className="border-t border-gray-200 pt-4">
+                    <div className="flex justify-between text-gray-600">
+                      <span>Cena proizvoda:</span>
+                      <span>{total.toFixed(2)} RSD</span>
+                    </div>
+                    <div className="flex justify-between text-gray-600">
+                      <span>Dostava:</span>
+                      <span>580.00 RSD</span>
+                    </div>
+                    <div className="border-t border-gray-200 pt-4">
+                      <div className="flex justify-between text-lg font-semibold text-gray-900">
+                        <span>Ukupna cena:</span>
+                        <span>{(total + 580).toFixed(2)} RSD</span>
+                      </div>
+                      <p className="text-sm text-gray-500 mt-2 text-center">
+                        Plaćanje pouzećem prilikom isporuke
+                      </p>
+                    </div>
+                  </div>
                 </div>
-              </div>
 
                 <button
                   type="submit"

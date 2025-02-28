@@ -107,7 +107,8 @@ const ProductDetails = () => {
             size: selectedSize,
             color: selectedColor,
             quantity: quantity,
-            colors: product.colors
+            colors: product.colors,
+            gender: product.gender
         };
 
         const success = addToCart(cartItem);
@@ -364,6 +365,12 @@ const ProductDetails = () => {
                            <div>
                             <h3 className="text-lg font-semibold text-gray-900 mb-6 text-center">Informacije o proizvodu</h3>
                             <div className="space-y-4 text-center">
+                                <p className="text-gray-600">
+                                    <span className="font-medium text-gray-900">Tip</span> - {
+                                        product.gender === 'male' ? 'Muška majica' :
+                                        product.gender === 'female' ? 'Ženska majica' : 'Unisex majica'
+                                    }
+                                </p>
                                 <p className="text-gray-600">
                                     <span className="font-medium text-gray-900">Materijal</span> - 100% Pamuk
                                 </p>

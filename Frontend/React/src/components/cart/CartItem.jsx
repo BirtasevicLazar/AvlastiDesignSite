@@ -57,6 +57,10 @@ const CartItem = ({ item }) => {
               Boja: <span className="font-medium text-gray-900">{colorNameMapping[item.color] || item.color}</span>
             </p>
           )}
+          <p className="mt-1 text-sm text-gray-500">
+            {item.gender === 'male' ? 'Muška' : 
+             item.gender === 'female' ? 'Ženska' : 'Unisex'} majica
+          </p>
         </div>
       </div>
 
