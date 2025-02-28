@@ -142,9 +142,16 @@ const PopularProducts = () => {
                                         <div className="aspect-square w-full p-6">
                                             <div className="relative w-full h-full rounded-xl overflow-hidden bg-gray-50">
                                                 <img
-                                                    src={`${import.meta.env.VITE_API_URL}/storage/${product.image}`}
+                                                    src={product.images && product.images.length > 0
+                                                        ? `${import.meta.env.VITE_API_URL}/storage/${product.images.find(img => img.is_primary)?.image_path || product.images[0].image_path}`
+                                                        : 'https://via.placeholder.com/300x300?text=Nema+slike'
+                                                    }
                                                     alt={product.name}
                                                     className="h-full w-full object-cover object-center"
+                                                    onError={(e) => {
+                                                        e.target.onerror = null;
+                                                        e.target.src = 'https://via.placeholder.com/300x300?text=Nema+slike';
+                                                    }}
                                                 />
                                             </div>
                                         </div>

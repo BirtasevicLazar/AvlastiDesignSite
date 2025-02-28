@@ -9,7 +9,8 @@ import {
     SwatchIcon,
     UserGroupIcon,
     PencilIcon,
-    XMarkIcon
+    XMarkIcon,
+    StarIcon
 } from '@heroicons/react/24/outline';
 
 const ProductManager = () => {
@@ -21,19 +22,21 @@ const ProductManager = () => {
     const [editedProduct, setEditedProduct] = useState({
         name: '',
         price: '',
-        image: null,
+        images: [],
+        newImages: [],
+        removeImages: [],
         gender: 'male',
         colors: ['']
     });
-    const [editPreviewImage, setEditPreviewImage] = useState(null);
+    const [editPreviewImages, setEditPreviewImages] = useState([]);
     const [newProduct, setNewProduct] = useState({
         name: '',
         price: '',
-        image: null,
+        images: [],
         gender: 'male',
         colors: ['']
     });
-    const [previewImage, setPreviewImage] = useState(null);
+    const [previewImages, setPreviewImages] = useState([]);
 
     useEffect(() => {
         fetchProducts();
@@ -50,11 +53,21 @@ const ProductManager = () => {
     };
 
     const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setNewProduct(prev => ({ ...prev, image: file }));
-            setPreviewImage(URL.createObjectURL(file));
-        }
+        const files = Array.from(e.target.files);
+        setNewProduct(prev => ({ ...prev, images: [...prev.images, ...files] }));
+        
+        const newPreviewUrls = files.map(file => URL.createObjectURL(file));
+        setPreviewImages(prev => [...prev, ...newPreviewUrls]);
+    };
+
+    const removeImage = (index) => {
+        setNewProduct(prev => ({
+            ...prev,
+            images: prev.images.filter((_, i) => i !== index)
+        }));
+        
+        URL.revokeObjectURL(previewImages[index]);
+        setPreviewImages(prev => prev.filter((_, i) => i !== index));
     };
 
     const handleColorChange = (index, value) => {
@@ -79,6 +92,17 @@ const ProductManager = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        if (newProduct.images.length === 0) {
+            setMessage({ type: 'error', text: 'Morate dodati bar jednu sliku' });
+            return;
+        }
+
+        if (newProduct.colors.every(color => !color.trim())) {
+            setMessage({ type: 'error', text: 'Morate dodati bar jednu boju' });
+            return;
+        }
+
         setLoading(true);
         setMessage({ type: '', text: '' });
 
@@ -86,13 +110,21 @@ const ProductManager = () => {
             const formData = new FormData();
             formData.append('name', newProduct.name);
             formData.append('price', newProduct.price);
-            formData.append('image', newProduct.image);
             formData.append('gender', newProduct.gender);
-            newProduct.colors.forEach(color => {
-                if (color.trim()) formData.append('colors[]', color.trim());
+            
+            // Dodaj samo neprazne boje
+            newProduct.colors
+                .filter(color => color.trim())
+                .forEach(color => {
+                    formData.append('colors[]', color.trim());
+                });
+
+            // Dodaj slike
+            newProduct.images.forEach((image, index) => {
+                formData.append(`images[${index}]`, image);
             });
 
-            await axiosInstance.post('/api/admin/products', formData, {
+            const response = await axiosInstance.post('/api/admin/products', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -102,15 +134,16 @@ const ProductManager = () => {
             setNewProduct({
                 name: '',
                 price: '',
-                image: null,
+                images: [],
                 gender: 'male',
                 colors: ['']
             });
-            setPreviewImage(null);
+            setPreviewImages([]);
             fetchProducts();
         } catch (error) {
             console.error('Error adding product:', error);
-            setMessage({ type: 'error', text: 'Greška pri dodavanju proizvoda' });
+            const errorMessage = error.response?.data?.error || 'Greška pri dodavanju proizvoda';
+            setMessage({ type: 'error', text: errorMessage });
         } finally {
             setLoading(false);
         }
@@ -136,18 +169,23 @@ const ProductManager = () => {
             price: product.price,
             gender: product.gender,
             colors: [...product.colors],
-            image: null
+            images: product.images || [],
+            newImages: [],
+            removeImages: []
         });
-        setEditPreviewImage(product.image.startsWith('http') ? product.image : `${import.meta.env.VITE_API_URL}/storage/${product.image}`);
+        setEditPreviewImages([]);
         setIsEditModalOpen(true);
     };
 
     const handleEditImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setEditedProduct(prev => ({ ...prev, image: file }));
-            setEditPreviewImage(URL.createObjectURL(file));
-        }
+        const files = Array.from(e.target.files);
+        setEditedProduct(prev => ({
+            ...prev,
+            newImages: [...prev.newImages, ...files]
+        }));
+        
+        const newPreviewUrls = files.map(file => URL.createObjectURL(file));
+        setEditPreviewImages(prev => [...prev, ...newPreviewUrls]);
     };
 
     const handleEditColorChange = (index, value) => {
@@ -170,6 +208,25 @@ const ProductManager = () => {
         }));
     };
 
+    const removeEditImage = (index, isExisting = false) => {
+        if (isExisting) {
+            const imageToRemove = editedProduct.images[index];
+            setEditedProduct(prev => ({
+                ...prev,
+                images: prev.images.filter((_, i) => i !== index),
+                removeImages: [...prev.removeImages, imageToRemove.id]
+            }));
+        } else {
+            const adjustedIndex = index - editedProduct.images.length;
+            URL.revokeObjectURL(editPreviewImages[adjustedIndex]);
+            setEditedProduct(prev => ({
+                ...prev,
+                newImages: prev.newImages.filter((_, i) => i !== adjustedIndex)
+            }));
+            setEditPreviewImages(prev => prev.filter((_, i) => i !== adjustedIndex));
+        }
+    };
+
     const handleEditSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -179,12 +236,15 @@ const ProductManager = () => {
             const formData = new FormData();
             formData.append('name', editedProduct.name);
             formData.append('price', editedProduct.price);
-            if (editedProduct.image) {
-                formData.append('image', editedProduct.image);
-            }
             formData.append('gender', editedProduct.gender);
             editedProduct.colors.forEach(color => {
                 if (color.trim()) formData.append('colors[]', color.trim());
+            });
+            editedProduct.newImages.forEach(image => {
+                formData.append('new_images[]', image);
+            });
+            editedProduct.removeImages.forEach(imageId => {
+                formData.append('remove_images[]', imageId);
             });
             formData.append('_method', 'PUT');
 
@@ -205,12 +265,23 @@ const ProductManager = () => {
         }
     };
 
+    const handleSetPrimaryImage = async (imageId) => {
+        try {
+            await axiosInstance.post(`/api/admin/products/${selectedProduct.id}/set-primary-image`, { image_id: imageId });
+            setMessage({ type: 'success', text: 'Slika je uspešno postavljena kao glavna' });
+            fetchProducts();
+        } catch (error) {
+            console.error('Error setting primary image:', error);
+            setMessage({ type: 'error', text: 'Greška pri postavljanju glavne slike' });
+        }
+    };
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="bg-white rounded-2xl shadow-sm"
+            className="bg-white rounded-2xl shadow-sm p-6"
         >
             <div className="border-b border-gray-100">
                 <div className="px-6 py-5">
@@ -229,54 +300,53 @@ const ProductManager = () => {
                 </div>
             )}
 
-            <div className="p-6">
-                <form id="add-product-form" onSubmit={handleSubmit} className="space-y-6">
+            {/* Forma za dodavanje novog proizvoda */}
+            <div className="mt-8 p-6 bg-gray-50 rounded-xl">
+                <h3 className="text-lg font-medium text-gray-900 mb-6">Dodaj novi proizvod</h3>
+                <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid grid-cols-1 gap-6">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                 <span className="flex items-center gap-2">
                                     <PhotoIcon className="w-4 h-4" />
-                                    Slika proizvoda
+                                    Slike proizvoda
                                 </span>
                             </label>
-                            <div 
-                                onClick={() => document.getElementById('productImage').click()}
-                                className="relative aspect-square rounded-lg overflow-hidden bg-gray-50 border border-dashed border-gray-200 flex items-center justify-center cursor-pointer hover:bg-gray-100 transition-colors max-w-[200px] mx-auto"
-                            >
-                                {previewImage ? (
-                                    <img
-                                        src={previewImage}
-                                        alt="Preview"
-                                        className="w-full h-full object-cover"
-                                    />
-                                ) : (
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                                {previewImages.map((preview, index) => (
+                                    <div key={index} className="relative aspect-square rounded-lg overflow-hidden bg-gray-50 border border-gray-200">
+                                        <img
+                                            src={preview}
+                                            alt={`Preview ${index + 1}`}
+                                            className="w-full h-full object-cover"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => removeImage(index)}
+                                            className="absolute top-2 right-2 p-1.5 bg-white/80 backdrop-blur-sm rounded-lg text-gray-600 hover:text-red-600 transition-colors"
+                                        >
+                                            <TrashIcon className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                ))}
+                                <div
+                                    onClick={() => document.getElementById('productImages').click()}
+                                    className="aspect-square rounded-lg bg-gray-50 border border-dashed border-gray-200 flex items-center justify-center cursor-pointer hover:bg-gray-100 transition-colors"
+                                >
                                     <div className="flex flex-col items-center">
                                         <PhotoIcon className="w-8 h-8 text-gray-400" />
-                                        <p className="text-gray-500 text-xs mt-2">Klikni za dodavanje slike</p>
+                                        <p className="text-gray-500 text-xs mt-2">Dodaj sliku</p>
                                     </div>
-                                )}
-                                <input
-                                    id="productImage"
-                                    type="file"
-                                    onChange={handleImageChange}
-                                    accept="image/*"
-                                    className="hidden"
-                                    required
-                                    onClick={(e) => e.stopPropagation()}
-                                />
-                                {previewImage && (
-                                    <button
-                                        type="button"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setPreviewImage(null);
-                                            setNewProduct(prev => ({ ...prev, image: null }));
-                                        }}
-                                        className="absolute top-2 right-2 p-1.5 bg-white/80 backdrop-blur-sm rounded-lg text-gray-600 hover:text-red-600 transition-colors"
-                                    >
-                                        <TrashIcon className="w-4 h-4" />
-                                    </button>
-                                )}
+                                    <input
+                                        id="productImages"
+                                        type="file"
+                                        onChange={handleImageChange}
+                                        accept="image/*"
+                                        className="hidden"
+                                        multiple
+                                        onClick={(e) => e.stopPropagation()}
+                                    />
+                                </div>
                             </div>
                         </div>
 
@@ -386,9 +456,13 @@ const ProductManager = () => {
                 </form>
             </div>
 
-            {/* Lista proizvoda */}
-            <div>
-                <h3 className="text-lg font-medium text-gray-900 mb-6">Postojeći proizvodi</h3>
+            {/* Lista postojećih proizvoda */}
+            <div className="mt-12">
+                <div className="border-b border-gray-100 mb-6">
+                    <h3 className="text-lg font-medium text-gray-900 pb-4">
+                        Postojeći proizvodi
+                    </h3>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {products.map((product) => (
                         <motion.div
@@ -399,7 +473,10 @@ const ProductManager = () => {
                         >
                             <div className="aspect-square bg-gray-100">
                                 <img
-                                    src={product.image.startsWith('http') ? product.image : `${import.meta.env.VITE_API_URL}/storage/${product.image}`}
+                                    src={product.images && product.images.length > 0 
+                                        ? `${import.meta.env.VITE_API_URL}/storage/${product.images[0].image_path}`
+                                        : 'https://via.placeholder.com/300x300?text=Nema+slike'
+                                    }
                                     alt={product.name}
                                     className="w-full h-full object-cover"
                                     onError={(e) => {
@@ -443,6 +520,12 @@ const ProductManager = () => {
                                     <UserGroupIcon className="w-4 h-4 mr-1" />
                                     {product.gender === 'male' ? 'Muška' : product.gender === 'female' ? 'Ženska' : 'Unisex'} majica
                                 </div>
+                                {product.images && product.images.length > 1 && (
+                                    <div className="mt-3 flex items-center text-xs text-gray-500">
+                                        <PhotoIcon className="w-4 h-4 mr-1" />
+                                        {product.images.length} slika
+                                    </div>
+                                )}
                             </div>
                         </motion.div>
                     ))}
@@ -483,46 +566,75 @@ const ProductManager = () => {
                                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                                 <span className="flex items-center gap-2">
                                                     <PhotoIcon className="w-4 h-4" />
-                                                    Slika proizvoda
+                                                    Slike proizvoda
                                                 </span>
                                             </label>
-                                            <div 
-                                                onClick={() => document.getElementById('editProductImage').click()}
-                                                className="relative aspect-square rounded-lg overflow-hidden bg-gray-50 border border-dashed border-gray-200 flex items-center justify-center cursor-pointer hover:bg-gray-100 transition-colors max-w-[200px] mx-auto"
-                                            >
-                                                {editPreviewImage ? (
-                                                    <img
-                                                        src={editPreviewImage}
-                                                        alt="Preview"
-                                                        className="w-full h-full object-cover"
-                                                    />
-                                                ) : (
+                                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                                                {editedProduct.images.map((image, index) => (
+                                                    <div key={index} className="relative aspect-square rounded-lg overflow-hidden bg-gray-50 border border-gray-200">
+                                                        <img
+                                                            src={`${import.meta.env.VITE_API_URL}/storage/${image.image_path}`}
+                                                            alt={`Product ${index + 1}`}
+                                                            className="w-full h-full object-cover"
+                                                            onError={(e) => {
+                                                                e.target.onerror = null;
+                                                                e.target.src = 'https://via.placeholder.com/300x300?text=Nema+slike';
+                                                            }}
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => removeEditImage(index, true)}
+                                                            className="absolute top-2 right-2 p-1.5 bg-white/80 backdrop-blur-sm rounded-lg text-gray-600 hover:text-red-600 transition-colors"
+                                                        >
+                                                            <TrashIcon className="w-4 h-4" />
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleSetPrimaryImage(image.id)}
+                                                            className={`absolute bottom-2 right-2 p-1.5 rounded-lg transition-colors ${
+                                                                image.is_primary 
+                                                                    ? 'bg-green-500 text-white' 
+                                                                    : 'bg-white/80 text-gray-600 hover:text-green-600'
+                                                            }`}
+                                                        >
+                                                            <StarIcon className="w-4 h-4" />
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                                {editPreviewImages.map((preview, index) => (
+                                                    <div key={`new-${index}`} className="relative aspect-square rounded-lg overflow-hidden bg-gray-50 border border-gray-200">
+                                                        <img
+                                                            src={preview}
+                                                            alt={`New Preview ${index + 1}`}
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => removeEditImage(editedProduct.images.length + index)}
+                                                            className="absolute top-2 right-2 p-1.5 bg-white/80 backdrop-blur-sm rounded-lg text-gray-600 hover:text-red-600 transition-colors"
+                                                        >
+                                                            <TrashIcon className="w-4 h-4" />
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                                <div
+                                                    onClick={() => document.getElementById('editProductImages').click()}
+                                                    className="aspect-square rounded-lg bg-gray-50 border border-dashed border-gray-200 flex items-center justify-center cursor-pointer hover:bg-gray-100 transition-colors"
+                                                >
                                                     <div className="flex flex-col items-center">
                                                         <PhotoIcon className="w-8 h-8 text-gray-400" />
-                                                        <p className="text-gray-500 text-xs mt-2">Klikni za promenu slike</p>
+                                                        <p className="text-gray-500 text-xs mt-2">Dodaj sliku</p>
                                                     </div>
-                                                )}
-                                                <input
-                                                    id="editProductImage"
-                                                    type="file"
-                                                    onChange={handleEditImageChange}
-                                                    accept="image/*"
-                                                    className="hidden"
-                                                    onClick={(e) => e.stopPropagation()}
-                                                />
-                                                {editPreviewImage && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            setEditPreviewImage(null);
-                                                            setEditedProduct(prev => ({ ...prev, image: null }));
-                                                        }}
-                                                        className="absolute top-2 right-2 p-1.5 bg-white/80 backdrop-blur-sm rounded-lg text-gray-600 hover:text-red-600 transition-colors"
-                                                    >
-                                                        <TrashIcon className="w-4 h-4" />
-                                                    </button>
-                                                )}
+                                                    <input
+                                                        id="editProductImages"
+                                                        type="file"
+                                                        onChange={handleEditImageChange}
+                                                        accept="image/*"
+                                                        className="hidden"
+                                                        multiple
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
 

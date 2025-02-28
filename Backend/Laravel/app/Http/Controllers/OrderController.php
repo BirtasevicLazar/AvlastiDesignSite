@@ -15,9 +15,12 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $orders = Order::with(['items.product'])
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $orders = Order::with(['items.product.images' => function($query) {
+            $query->orderBy('is_primary', 'desc')
+                  ->orderBy('display_order');
+        }])
+        ->orderBy('created_at', 'desc')
+        ->get();
 
         return response()->json([
             'orders' => $orders

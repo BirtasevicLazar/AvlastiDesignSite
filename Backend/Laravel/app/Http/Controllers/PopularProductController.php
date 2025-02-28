@@ -10,16 +10,24 @@ class PopularProductController extends Controller
 {
     public function index()
     {
-        $popularProducts = PopularProduct::with('product')
-            ->orderBy('display_order')
-            ->get()
-            ->map(function ($popularProduct) {
-                return [
-                    'id' => $popularProduct->id,
-                    'product' => $popularProduct->product,
-                    'display_order' => $popularProduct->display_order
-                ];
-            });
+        $popularProducts = PopularProduct::with(['product.images' => function($query) {
+            $query->orderBy('is_primary', 'desc')
+                  ->orderBy('display_order');
+        }])
+        ->orderBy('display_order')
+        ->get()
+        ->map(function ($popularProduct) {
+            $product = $popularProduct->product;
+            $primaryImage = $product->images->first();
+            
+            return [
+                'id' => $popularProduct->id,
+                'product' => array_merge($product->toArray(), [
+                    'images' => $product->images
+                ]),
+                'display_order' => $popularProduct->display_order
+            ];
+        });
 
         return response()->json(['popular_products' => $popularProducts]);
     }
@@ -38,11 +46,20 @@ class PopularProductController extends Controller
         }
 
         $popularProduct = PopularProduct::create($request->all());
-        $popularProduct->load('product');
+        $popularProduct->load(['product.images' => function($query) {
+            $query->orderBy('is_primary', 'desc')
+                  ->orderBy('display_order');
+        }]);
 
         return response()->json([
             'message' => 'Proizvod je uspešno dodat u popularne',
-            'popular_product' => $popularProduct
+            'popular_product' => [
+                'id' => $popularProduct->id,
+                'product' => array_merge($popularProduct->product->toArray(), [
+                    'images' => $popularProduct->product->images
+                ]),
+                'display_order' => $popularProduct->display_order
+            ]
         ], 201);
     }
 
@@ -73,7 +90,12 @@ class PopularProductController extends Controller
     public function getAvailableProducts()
     {
         $popularProductIds = PopularProduct::pluck('product_id');
-        $availableProducts = Product::whereNotIn('id', $popularProductIds)->get();
+        $availableProducts = Product::with(['images' => function($query) {
+            $query->orderBy('is_primary', 'desc')
+                  ->orderBy('display_order');
+        }])
+        ->whereNotIn('id', $popularProductIds)
+        ->get();
 
         return response()->json(['available_products' => $availableProducts]);
     }

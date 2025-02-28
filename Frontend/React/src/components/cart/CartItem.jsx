@@ -39,9 +39,13 @@ const CartItem = ({ item }) => {
       <div className="flex flex-col items-center md:flex-row md:items-start">
         {/* Slika proizvoda */}
         <img
-          src={item.image}
+          src={item.image || 'https://via.placeholder.com/150x150?text=Nema+slike'}
           alt={item.name}
           className="w-24 h-24 object-cover rounded-lg mb-4 md:mb-0 md:mr-4"
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = 'https://via.placeholder.com/150x150?text=Nema+slike';
+          }}
         />
 
         {/* Informacije o proizvodu */}

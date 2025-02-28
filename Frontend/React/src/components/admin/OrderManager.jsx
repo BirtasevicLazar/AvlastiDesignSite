@@ -284,9 +284,16 @@ const OrderManager = () => {
                                                                     <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                                                                         <div className="flex items-center gap-4">
                                                                             <img
-                                                                                src={`${import.meta.env.VITE_API_URL}/storage/${item.product.image}`}
+                                                                                src={item.product.images && item.product.images.length > 0
+                                                                                    ? `${import.meta.env.VITE_API_URL}/storage/${item.product.images[0].image_path}`
+                                                                                    : 'https://via.placeholder.com/150x150?text=Nema+slike'
+                                                                                }
                                                                                 alt={item.product.name}
                                                                                 className="w-16 h-16 object-cover rounded-lg"
+                                                                                onError={(e) => {
+                                                                                    e.target.onerror = null;
+                                                                                    e.target.src = 'https://via.placeholder.com/150x150?text=Nema+slike';
+                                                                                }}
                                                                             />
                                                                             <div>
                                                                                 <p className="text-sm font-medium text-gray-900">{item.product.name}</p>

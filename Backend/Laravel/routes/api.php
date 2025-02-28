@@ -23,6 +23,7 @@ Route::prefix('admin')->group(function () {
 
         // Product routes
         Route::apiResource('products', ProductController::class);
+        Route::post('/products/{product}/set-primary-image', [ProductController::class, 'setPrimaryImage']);
 
         // Popular products routes
         Route::get('/popular-products/available', [PopularProductController::class, 'getAvailableProducts']);

@@ -12,7 +12,6 @@ class Product extends Model
     protected $fillable = [
         'name',
         'price',
-        'image',
         'gender',
         'colors'
     ];
@@ -21,4 +20,14 @@ class Product extends Model
         'colors' => 'array',
         'price' => 'decimal:2'
     ];
+
+    public function images()
+    {
+        return $this->hasMany(ProductImage::class)->orderBy('display_order');
+    }
+
+    public function primaryImage()
+    {
+        return $this->hasOne(ProductImage::class)->where('is_primary', true);
+    }
 } 

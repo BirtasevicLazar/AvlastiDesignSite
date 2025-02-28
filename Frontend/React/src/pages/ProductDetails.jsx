@@ -52,6 +52,7 @@ const ProductDetails = () => {
     const [quantity, setQuantity] = useState(1);
     const [addedToCart, setAddedToCart] = useState(false);
     const [validationError, setValidationError] = useState(null);
+    const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const { addToCart, cart } = useCart();
 
     useEffect(() => {
@@ -99,11 +100,14 @@ const ProductDetails = () => {
             return;
         }
 
+        const primaryImage = product.images?.find(img => img.is_primary)?.image_path || 
+                           product.images?.[0]?.image_path;
+
         const cartItem = {
             id: product.id,
             name: product.name,
             price: product.price,
-            image: `${import.meta.env.VITE_API_URL}/storage/${product.image}`,
+            image: primaryImage ? `${import.meta.env.VITE_API_URL}/storage/${primaryImage}` : null,
             size: selectedSize,
             color: selectedColor,
             quantity: quantity,
@@ -179,15 +183,50 @@ const ProductDetails = () => {
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="w-full"
+                        className="w-full space-y-4"
                     >
+                        {/* Glavna slika */}
                         <div className="aspect-square bg-white rounded-3xl overflow-hidden border border-gray-100">
                             <img
-                                src={`${import.meta.env.VITE_API_URL}/storage/${product.image}`}
-                                alt={product.name}
+                                src={product?.images && product.images.length > 0
+                                    ? `${import.meta.env.VITE_API_URL}/storage/${product.images[selectedImageIndex].image_path}`
+                                    : 'https://via.placeholder.com/600x600?text=Nema+slike'
+                                }
+                                alt={product?.name}
                                 className="w-full h-full object-cover object-center"
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = 'https://via.placeholder.com/600x600?text=Nema+slike';
+                                }}
                             />
                         </div>
+
+                        {/* Thumbnail galerija */}
+                        {product?.images && product.images.length > 1 && (
+                            <div className="grid grid-cols-4 sm:grid-cols-6 gap-4">
+                                {product.images.map((image, index) => (
+                                    <button
+                                        key={image.id}
+                                        onClick={() => setSelectedImageIndex(index)}
+                                        className={`aspect-square rounded-xl overflow-hidden border-2 transition-all duration-200 ${
+                                            selectedImageIndex === index
+                                                ? 'border-gray-900 ring-2 ring-gray-900 ring-offset-2'
+                                                : 'border-gray-100 hover:border-gray-200'
+                                        }`}
+                                    >
+                                        <img
+                                            src={`${import.meta.env.VITE_API_URL}/storage/${image.image_path}`}
+                                            alt={`${product.name} - slika ${index + 1}`}
+                                            className="w-full h-full object-cover object-center"
+                                            onError={(e) => {
+                                                e.target.onerror = null;
+                                                e.target.src = 'https://via.placeholder.com/150x150?text=Nema+slike';
+                                            }}
+                                        />
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </motion.div>
 
                     {/* Detalji proizvoda */}

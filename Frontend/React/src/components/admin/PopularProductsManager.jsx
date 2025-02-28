@@ -167,9 +167,16 @@ const PopularProductsManager = () => {
                                 <div className="flex-shrink-0">
                                     <div className="w-16 h-16 rounded-lg overflow-hidden bg-white">
                                         <img
-                                            src={`${import.meta.env.VITE_API_URL}/storage/${product.image}`}
+                                            src={product.images && product.images.length > 0
+                                                ? `${import.meta.env.VITE_API_URL}/storage/${product.images.find(img => img.is_primary)?.image_path || product.images[0].image_path}`
+                                                : 'https://via.placeholder.com/150x150?text=Nema+slike'
+                                            }
                                             alt={product.name}
                                             className="w-full h-full object-cover"
+                                            onError={(e) => {
+                                                e.target.onerror = null;
+                                                e.target.src = 'https://via.placeholder.com/150x150?text=Nema+slike';
+                                            }}
                                         />
                                     </div>
                                 </div>
